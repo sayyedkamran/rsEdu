@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:17
+    container_name: rsedu_db
+    restart: always
+    environment:
+      POSTGRES_USER: rsedu
+      POSTGRES_PASSWORD: rsedu_password
+      POSTGRES_DB: rsedu
+    ports:
+      - "5432:5432"
+    volumes:
+      - rsedu_db_data:/var/lib/postgresql/data
+
+volumes:
+  rsedu_db_data:
