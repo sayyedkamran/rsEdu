@@ -6,6 +6,7 @@ use tracing::info;
 
 mod config;
 mod database;
+mod entities;
 
 #[derive(Clone)]
 pub struct AppState {
