@@ -1,13 +1,14 @@
-use axum::{Router, routing::get, routing::post, middleware};
+use axum::{Router, middleware, routing::get, routing::post, routing::put, routing::delete};
 use sea_orm::DatabaseConnection;
 use std::sync::Arc;
 use tokio::net::TcpListener;
 use tracing::info;
 
+mod auth;
 mod config;
 mod database;
 mod entities;
-mod auth;
+mod students;
 
 #[derive(Clone)]
 pub struct AppState {
@@ -38,7 +39,11 @@ async fn main() {
 
     // Protected routes (auth required)
     let protected_routes = Router::new()
-        .route("/api/v1/protected", get(protected_handler))
+        .route("/api/v1/students", post(students::handlers::create_student))
+        .route("/api/v1/students", get(students::handlers::get_students))
+        .route("/api/v1/students/{id}", get(students::handlers::get_student))
+        .route("/api/v1/students/{id}", put(students::handlers::update_student))
+        .route("/api/v1/students/{id}", delete(students::handlers::delete_student))
         .layer(middleware::from_fn_with_state(
             state.clone(),
             auth::middleware::auth_middleware,
@@ -58,8 +63,4 @@ async fn main() {
 
 async fn health_check() -> &'static str {
     "OK"
-}
-
-async fn protected_handler() -> &'static str {
-    "You are authenticated!"
 }
