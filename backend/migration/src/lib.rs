@@ -3,6 +3,12 @@ pub use sea_orm_migration::prelude::*;
 mod m20260510_115944_create_users_table;
 mod m20260510_120558_create_students_table;
 mod m20260512_162306_create_teachers_table;
+mod m20260512_180101_create_streams_table;
+mod m20260512_180216_create_master_classes_table;
+mod m20260512_180318_create_class_progressions_table;
+mod m20260512_180423_create_master_sections_table;
+mod m20260512_180518_create_academic_years_table;
+mod m20260512_180858_create_classes_table;
 
 pub struct Migrator;
 
@@ -13,6 +19,12 @@ impl MigratorTrait for Migrator {
             Box::new(m20260510_115944_create_users_table::Migration),
             Box::new(m20260510_120558_create_students_table::Migration),
             Box::new(m20260512_162306_create_teachers_table::Migration),
+            Box::new(m20260512_180101_create_streams_table::Migration),
+            Box::new(m20260512_180216_create_master_classes_table::Migration),
+            Box::new(m20260512_180318_create_class_progressions_table::Migration),
+            Box::new(m20260512_180423_create_master_sections_table::Migration),
+            Box::new(m20260512_180518_create_academic_years_table::Migration),
+            Box::new(m20260512_180858_create_classes_table::Migration),
         ]
     }
 }

@@ -2,6 +2,12 @@
 
 pub mod prelude;
 
+pub mod academic_years;
+pub mod class_progressions;
+pub mod classes;
+pub mod master_classes;
+pub mod master_sections;
+pub mod streams;
 pub mod students;
 pub mod teachers;
 pub mod users;
