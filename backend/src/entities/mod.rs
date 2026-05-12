@@ -3,4 +3,5 @@
 pub mod prelude;
 
 pub mod students;
+pub mod teachers;
 pub mod users;
