@@ -9,6 +9,11 @@ mod m20260512_180318_create_class_progressions_table;
 mod m20260512_180423_create_master_sections_table;
 mod m20260512_180518_create_academic_years_table;
 mod m20260512_180858_create_classes_table;
+mod m20260512_182237_create_roles_table;
+mod m20260512_182455_create_permissions_table;
+mod m20260512_182652_create_role_permissions_table;
+mod m20260512_182758_create_user_roles_table;
+mod m20260512_182905_drop_role_column_from_users;
 
 pub struct Migrator;
 
@@ -25,6 +30,11 @@ impl MigratorTrait for Migrator {
             Box::new(m20260512_180423_create_master_sections_table::Migration),
             Box::new(m20260512_180518_create_academic_years_table::Migration),
             Box::new(m20260512_180858_create_classes_table::Migration),
+            Box::new(m20260512_182237_create_roles_table::Migration),
+            Box::new(m20260512_182455_create_permissions_table::Migration),
+            Box::new(m20260512_182652_create_role_permissions_table::Migration),
+            Box::new(m20260512_182758_create_user_roles_table::Migration),
+            Box::new(m20260512_182905_drop_role_column_from_users::Migration),
         ]
     }
 }
