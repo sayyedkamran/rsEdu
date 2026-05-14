@@ -10,10 +10,28 @@ pub struct Model {
     pub user_id: i32,
     pub role_id: i32,
     pub created_at: DateTimeWithTimeZone,
+    pub organization_id: Option<i32>,
+    pub branch_id: Option<i32>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
+    #[sea_orm(
+        belongs_to = "super::branches::Entity",
+        from = "Column::BranchId",
+        to = "super::branches::Column::Id",
+        on_update = "NoAction",
+        on_delete = "Cascade"
+    )]
+    Branches,
+    #[sea_orm(
+        belongs_to = "super::organizations::Entity",
+        from = "Column::OrganizationId",
+        to = "super::organizations::Column::Id",
+        on_update = "NoAction",
+        on_delete = "Cascade"
+    )]
+    Organizations,
     #[sea_orm(
         belongs_to = "super::roles::Entity",
         from = "Column::RoleId",
@@ -30,6 +48,18 @@ pub enum Relation {
         on_delete = "Cascade"
     )]
     Users,
+}
+
+impl Related<super::branches::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Branches.def()
+    }
+}
+
+impl Related<super::organizations::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Organizations.def()
+    }
 }
 
 impl Related<super::roles::Entity> for Entity {

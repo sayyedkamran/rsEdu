@@ -9,7 +9,6 @@ mod config;
 mod database;
 mod entities;
 mod students;
-mod teachers;
 
 #[derive(Clone)]
 pub struct AppState {
@@ -35,18 +34,11 @@ async fn main() {
         .route("/api/v1/auth/login", post(auth::handlers::login));
 
     let protected_routes = Router::new()
-        // Student routes
         .route("/api/v1/students", post(students::handlers::create_student))
         .route("/api/v1/students", get(students::handlers::get_students))
         .route("/api/v1/students/{id}", get(students::handlers::get_student))
         .route("/api/v1/students/{id}", put(students::handlers::update_student))
         .route("/api/v1/students/{id}", delete(students::handlers::delete_student))
-        // Teacher routes
-        .route("/api/v1/teachers", post(teachers::handlers::create_teacher))
-        .route("/api/v1/teachers", get(teachers::handlers::get_teachers))
-        .route("/api/v1/teachers/{id}", get(teachers::handlers::get_teacher))
-        .route("/api/v1/teachers/{id}", put(teachers::handlers::update_teacher))
-        .route("/api/v1/teachers/{id}", delete(teachers::handlers::delete_teacher))
         .layer(middleware::from_fn_with_state(
             state.clone(),
             auth::middleware::auth_middleware,

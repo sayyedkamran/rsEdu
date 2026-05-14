@@ -10,11 +10,12 @@ pub struct Model {
     pub master_class_id: i32,
     pub master_section_id: i32,
     pub academic_year_id: i32,
-    pub class_teacher_id: Option<i32>,
     pub capacity: Option<i32>,
     pub is_active: bool,
     pub created_at: DateTimeWithTimeZone,
     pub updated_at: DateTimeWithTimeZone,
+    pub branch_id: Option<i32>,
+    pub class_staff_id: Option<i32>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
@@ -27,6 +28,14 @@ pub enum Relation {
         on_delete = "Restrict"
     )]
     AcademicYears,
+    #[sea_orm(
+        belongs_to = "super::branches::Entity",
+        from = "Column::BranchId",
+        to = "super::branches::Column::Id",
+        on_update = "NoAction",
+        on_delete = "Restrict"
+    )]
+    Branches,
     #[sea_orm(
         belongs_to = "super::master_classes::Entity",
         from = "Column::MasterClassId",
@@ -44,18 +53,24 @@ pub enum Relation {
     )]
     MasterSections,
     #[sea_orm(
-        belongs_to = "super::teachers::Entity",
-        from = "Column::ClassTeacherId",
-        to = "super::teachers::Column::Id",
+        belongs_to = "super::staff::Entity",
+        from = "Column::ClassStaffId",
+        to = "super::staff::Column::Id",
         on_update = "NoAction",
         on_delete = "SetNull"
     )]
-    Teachers,
+    Staff,
 }
 
 impl Related<super::academic_years::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::AcademicYears.def()
+    }
+}
+
+impl Related<super::branches::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Branches.def()
     }
 }
 
@@ -71,9 +86,9 @@ impl Related<super::master_sections::Entity> for Entity {
     }
 }
 
-impl Related<super::teachers::Entity> for Entity {
+impl Related<super::staff::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::Teachers.def()
+        Relation::Staff.def()
     }
 }
 

@@ -3,40 +3,44 @@
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
-#[sea_orm(table_name = "users")]
+#[sea_orm(table_name = "branches")]
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
+    pub organization_id: i32,
+    pub name: String,
+    pub name_urdu: Option<String>,
     #[sea_orm(unique)]
-    pub username: String,
-    #[sea_orm(unique)]
-    pub email: String,
-    pub password_hash: String,
+    pub code: String,
+    pub city_id: Option<i32>,
+    pub area: Option<String>,
+    pub address_line: Option<String>,
+    pub postal_code: Option<String>,
     pub is_active: bool,
     pub created_at: DateTimeWithTimeZone,
     pub updated_at: DateTimeWithTimeZone,
-    pub organization_id: Option<i32>,
-    pub branch_id: Option<i32>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
+    #[sea_orm(has_many = "super::branch_contacts::Entity")]
+    BranchContacts,
     #[sea_orm(
-        belongs_to = "super::branches::Entity",
-        from = "Column::BranchId",
-        to = "super::branches::Column::Id",
+        belongs_to = "super::cities::Entity",
+        from = "Column::CityId",
+        to = "super::cities::Column::Id",
         on_update = "NoAction",
         on_delete = "SetNull"
     )]
-    Branches,
-    #[sea_orm(has_many = "super::guardians::Entity")]
-    Guardians,
+    Cities,
+    #[sea_orm(has_many = "super::classes::Entity")]
+    Classes,
     #[sea_orm(
         belongs_to = "super::organizations::Entity",
         from = "Column::OrganizationId",
         to = "super::organizations::Column::Id",
         on_update = "NoAction",
-        on_delete = "SetNull"
+        on_delete = "Restrict"
     )]
     Organizations,
     #[sea_orm(has_many = "super::staff::Entity")]
@@ -45,17 +49,25 @@ pub enum Relation {
     Students,
     #[sea_orm(has_many = "super::user_roles::Entity")]
     UserRoles,
+    #[sea_orm(has_many = "super::users::Entity")]
+    Users,
 }
 
-impl Related<super::branches::Entity> for Entity {
+impl Related<super::branch_contacts::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::Branches.def()
+        Relation::BranchContacts.def()
     }
 }
 
-impl Related<super::guardians::Entity> for Entity {
+impl Related<super::cities::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::Guardians.def()
+        Relation::Cities.def()
+    }
+}
+
+impl Related<super::classes::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Classes.def()
     }
 }
 
@@ -80,6 +92,12 @@ impl Related<super::students::Entity> for Entity {
 impl Related<super::user_roles::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::UserRoles.def()
+    }
+}
+
+impl Related<super::users::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Users.def()
     }
 }
 

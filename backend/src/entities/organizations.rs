@@ -3,48 +3,53 @@
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
-#[sea_orm(table_name = "users")]
+#[sea_orm(table_name = "organizations")]
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
-    #[sea_orm(unique)]
-    pub username: String,
-    #[sea_orm(unique)]
-    pub email: String,
-    pub password_hash: String,
+    pub name: String,
+    pub name_urdu: Option<String>,
+    pub logo_url: Option<String>,
+    pub website: Option<String>,
+    pub email: Option<String>,
+    pub phone: Option<String>,
+    pub city_id: Option<i32>,
+    pub address: Option<String>,
     pub is_active: bool,
     pub created_at: DateTimeWithTimeZone,
     pub updated_at: DateTimeWithTimeZone,
-    pub organization_id: Option<i32>,
-    pub branch_id: Option<i32>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
-    #[sea_orm(
-        belongs_to = "super::branches::Entity",
-        from = "Column::BranchId",
-        to = "super::branches::Column::Id",
-        on_update = "NoAction",
-        on_delete = "SetNull"
-    )]
+    #[sea_orm(has_many = "super::academic_years::Entity")]
+    AcademicYears,
+    #[sea_orm(has_many = "super::branches::Entity")]
     Branches,
-    #[sea_orm(has_many = "super::guardians::Entity")]
-    Guardians,
     #[sea_orm(
-        belongs_to = "super::organizations::Entity",
-        from = "Column::OrganizationId",
-        to = "super::organizations::Column::Id",
+        belongs_to = "super::cities::Entity",
+        from = "Column::CityId",
+        to = "super::cities::Column::Id",
         on_update = "NoAction",
         on_delete = "SetNull"
     )]
-    Organizations,
+    Cities,
+    #[sea_orm(has_many = "super::organization_settings::Entity")]
+    OrganizationSettings,
     #[sea_orm(has_many = "super::staff::Entity")]
     Staff,
     #[sea_orm(has_many = "super::students::Entity")]
     Students,
     #[sea_orm(has_many = "super::user_roles::Entity")]
     UserRoles,
+    #[sea_orm(has_many = "super::users::Entity")]
+    Users,
+}
+
+impl Related<super::academic_years::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::AcademicYears.def()
+    }
 }
 
 impl Related<super::branches::Entity> for Entity {
@@ -53,15 +58,15 @@ impl Related<super::branches::Entity> for Entity {
     }
 }
 
-impl Related<super::guardians::Entity> for Entity {
+impl Related<super::cities::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::Guardians.def()
+        Relation::Cities.def()
     }
 }
 
-impl Related<super::organizations::Entity> for Entity {
+impl Related<super::organization_settings::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::Organizations.def()
+        Relation::OrganizationSettings.def()
     }
 }
 
@@ -80,6 +85,12 @@ impl Related<super::students::Entity> for Entity {
 impl Related<super::user_roles::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::UserRoles.def()
+    }
+}
+
+impl Related<super::users::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Users.def()
     }
 }
 

@@ -3,42 +3,24 @@
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
-#[sea_orm(table_name = "students")]
+#[sea_orm(table_name = "guardians")]
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
-    pub user_id: i32,
+    pub user_id: Option<i32>,
     pub first_name: String,
     pub last_name: String,
-    pub date_of_birth: Date,
-    pub gender: String,
-    pub roll_number: String,
-    pub admission_date: Date,
+    pub relationship: String,
+    pub cnic: Option<String>,
+    pub occupation: Option<String>,
+    pub employer: Option<String>,
     pub is_active: bool,
     pub created_at: DateTimeWithTimeZone,
     pub updated_at: DateTimeWithTimeZone,
-    pub organization_id: Option<i32>,
-    pub branch_id: Option<i32>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
-    #[sea_orm(
-        belongs_to = "super::branches::Entity",
-        from = "Column::BranchId",
-        to = "super::branches::Column::Id",
-        on_update = "NoAction",
-        on_delete = "SetNull"
-    )]
-    Branches,
-    #[sea_orm(
-        belongs_to = "super::organizations::Entity",
-        from = "Column::OrganizationId",
-        to = "super::organizations::Column::Id",
-        on_update = "NoAction",
-        on_delete = "SetNull"
-    )]
-    Organizations,
     #[sea_orm(has_many = "super::student_guardians::Entity")]
     StudentGuardians,
     #[sea_orm(
@@ -46,21 +28,9 @@ pub enum Relation {
         from = "Column::UserId",
         to = "super::users::Column::Id",
         on_update = "NoAction",
-        on_delete = "Cascade"
+        on_delete = "SetNull"
     )]
     Users,
-}
-
-impl Related<super::branches::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Branches.def()
-    }
-}
-
-impl Related<super::organizations::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Organizations.def()
-    }
 }
 
 impl Related<super::student_guardians::Entity> for Entity {

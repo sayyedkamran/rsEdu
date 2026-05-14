@@ -3,22 +3,24 @@
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
-#[sea_orm(table_name = "students")]
+#[sea_orm(table_name = "staff")]
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
     pub user_id: i32,
+    pub organization_id: i32,
+    pub branch_id: Option<i32>,
+    pub staff_type_id: i32,
     pub first_name: String,
     pub last_name: String,
+    pub father_name: Option<String>,
     pub date_of_birth: Date,
     pub gender: String,
-    pub roll_number: String,
-    pub admission_date: Date,
+    pub cnic: Option<String>,
+    pub joining_date: Date,
     pub is_active: bool,
     pub created_at: DateTimeWithTimeZone,
     pub updated_at: DateTimeWithTimeZone,
-    pub organization_id: Option<i32>,
-    pub branch_id: Option<i32>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
@@ -28,25 +30,35 @@ pub enum Relation {
         from = "Column::BranchId",
         to = "super::branches::Column::Id",
         on_update = "NoAction",
-        on_delete = "SetNull"
+        on_delete = "Restrict"
     )]
     Branches,
+    #[sea_orm(has_many = "super::classes::Entity")]
+    Classes,
     #[sea_orm(
         belongs_to = "super::organizations::Entity",
         from = "Column::OrganizationId",
         to = "super::organizations::Column::Id",
         on_update = "NoAction",
-        on_delete = "SetNull"
+        on_delete = "Restrict"
     )]
     Organizations,
-    #[sea_orm(has_many = "super::student_guardians::Entity")]
-    StudentGuardians,
+    #[sea_orm(has_many = "super::qualifications::Entity")]
+    Qualifications,
+    #[sea_orm(
+        belongs_to = "super::staff_types::Entity",
+        from = "Column::StaffTypeId",
+        to = "super::staff_types::Column::Id",
+        on_update = "NoAction",
+        on_delete = "Restrict"
+    )]
+    StaffTypes,
     #[sea_orm(
         belongs_to = "super::users::Entity",
         from = "Column::UserId",
         to = "super::users::Column::Id",
         on_update = "NoAction",
-        on_delete = "Cascade"
+        on_delete = "Restrict"
     )]
     Users,
 }
@@ -57,15 +69,27 @@ impl Related<super::branches::Entity> for Entity {
     }
 }
 
+impl Related<super::classes::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Classes.def()
+    }
+}
+
 impl Related<super::organizations::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Organizations.def()
     }
 }
 
-impl Related<super::student_guardians::Entity> for Entity {
+impl Related<super::qualifications::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::StudentGuardians.def()
+        Relation::Qualifications.def()
+    }
+}
+
+impl Related<super::staff_types::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::StaffTypes.def()
     }
 }
 

@@ -3,58 +3,33 @@
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
-#[sea_orm(table_name = "academic_years")]
+#[sea_orm(table_name = "organization_settings")]
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
-    pub title: String,
-    pub stream_id: i32,
-    pub start_date: Date,
-    pub end_date: Date,
-    pub is_active: bool,
+    pub organization_id: i32,
+    pub key: String,
+    pub value: String,
     pub description: Option<String>,
     pub created_at: DateTimeWithTimeZone,
     pub updated_at: DateTimeWithTimeZone,
-    pub organization_id: Option<i32>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
-    #[sea_orm(has_many = "super::classes::Entity")]
-    Classes,
     #[sea_orm(
         belongs_to = "super::organizations::Entity",
         from = "Column::OrganizationId",
         to = "super::organizations::Column::Id",
         on_update = "NoAction",
-        on_delete = "Restrict"
+        on_delete = "Cascade"
     )]
     Organizations,
-    #[sea_orm(
-        belongs_to = "super::streams::Entity",
-        from = "Column::StreamId",
-        to = "super::streams::Column::Id",
-        on_update = "NoAction",
-        on_delete = "Restrict"
-    )]
-    Streams,
-}
-
-impl Related<super::classes::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Classes.def()
-    }
 }
 
 impl Related<super::organizations::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Organizations.def()
-    }
-}
-
-impl Related<super::streams::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Streams.def()
     }
 }
 
