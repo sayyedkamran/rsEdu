@@ -7,9 +7,10 @@ use sea_orm::entity::prelude::*;
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
+    pub organization_id: i32,
+    pub stream_id: i32,
     pub name: String,
     pub name_urdu: Option<String>,
-    pub stream_id: i32,
     pub order: i32,
     pub is_active: bool,
     pub created_at: DateTimeWithTimeZone,
@@ -20,6 +21,14 @@ pub struct Model {
 pub enum Relation {
     #[sea_orm(has_many = "super::classes::Entity")]
     Classes,
+    #[sea_orm(
+        belongs_to = "super::organizations::Entity",
+        from = "Column::OrganizationId",
+        to = "super::organizations::Column::Id",
+        on_update = "NoAction",
+        on_delete = "Restrict"
+    )]
+    Organizations,
     #[sea_orm(
         belongs_to = "super::streams::Entity",
         from = "Column::StreamId",
@@ -33,6 +42,12 @@ pub enum Relation {
 impl Related<super::classes::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Classes.def()
+    }
+}
+
+impl Related<super::organizations::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Organizations.def()
     }
 }
 

@@ -8,6 +8,8 @@ pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
     pub user_id: i32,
+    pub organization_id: i32,
+    pub branch_id: i32,
     pub first_name: String,
     pub last_name: String,
     pub date_of_birth: Date,
@@ -17,8 +19,6 @@ pub struct Model {
     pub is_active: bool,
     pub created_at: DateTimeWithTimeZone,
     pub updated_at: DateTimeWithTimeZone,
-    pub organization_id: Option<i32>,
-    pub branch_id: Option<i32>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
@@ -28,7 +28,7 @@ pub enum Relation {
         from = "Column::BranchId",
         to = "super::branches::Column::Id",
         on_update = "NoAction",
-        on_delete = "SetNull"
+        on_delete = "Restrict"
     )]
     Branches,
     #[sea_orm(
@@ -36,7 +36,7 @@ pub enum Relation {
         from = "Column::OrganizationId",
         to = "super::organizations::Column::Id",
         on_update = "NoAction",
-        on_delete = "SetNull"
+        on_delete = "Restrict"
     )]
     Organizations,
     #[sea_orm(has_many = "super::student_guardians::Entity")]
@@ -46,7 +46,7 @@ pub enum Relation {
         from = "Column::UserId",
         to = "super::users::Column::Id",
         on_update = "NoAction",
-        on_delete = "Cascade"
+        on_delete = "Restrict"
     )]
     Users,
 }

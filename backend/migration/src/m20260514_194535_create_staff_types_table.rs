@@ -12,13 +12,21 @@ impl MigrationTrait for Migration {
                     .table(StaffTypes::Table)
                     .if_not_exists()
                     .col(pk_auto(StaffTypes::Id))
-                    .col(string_uniq(StaffTypes::Name))
+                    .col(integer(StaffTypes::OrganizationId))
+                    .col(string(StaffTypes::Name))
                     .col(string_null(StaffTypes::NameUrdu))
                     .col(boolean(StaffTypes::IsTeaching))
                     .col(string_null(StaffTypes::Description))
                     .col(boolean(StaffTypes::IsActive))
                     .col(timestamp_with_time_zone(StaffTypes::CreatedAt))
                     .col(timestamp_with_time_zone(StaffTypes::UpdatedAt))
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("fk_staff_types_organization_id")
+                            .from(StaffTypes::Table, StaffTypes::OrganizationId)
+                            .to(Alias::new("organizations"), Alias::new("id"))
+                            .on_delete(ForeignKeyAction::Restrict),
+                    )
                     .to_owned(),
             )
             .await
@@ -35,6 +43,7 @@ impl MigrationTrait for Migration {
 enum StaffTypes {
     Table,
     Id,
+    OrganizationId,
     Name,
     NameUrdu,
     IsTeaching,

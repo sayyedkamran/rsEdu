@@ -7,7 +7,8 @@ use sea_orm::entity::prelude::*;
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
-    #[sea_orm(unique)]
+    pub organization_id: Option<i32>,
+    pub branch_id: Option<i32>,
     pub name: String,
     pub description: Option<String>,
     pub is_active: bool,
@@ -17,10 +18,38 @@ pub struct Model {
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
+    #[sea_orm(
+        belongs_to = "super::branches::Entity",
+        from = "Column::BranchId",
+        to = "super::branches::Column::Id",
+        on_update = "NoAction",
+        on_delete = "Cascade"
+    )]
+    Branches,
+    #[sea_orm(
+        belongs_to = "super::organizations::Entity",
+        from = "Column::OrganizationId",
+        to = "super::organizations::Column::Id",
+        on_update = "NoAction",
+        on_delete = "Cascade"
+    )]
+    Organizations,
     #[sea_orm(has_many = "super::role_permissions::Entity")]
     RolePermissions,
     #[sea_orm(has_many = "super::user_roles::Entity")]
     UserRoles,
+}
+
+impl Related<super::branches::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Branches.def()
+    }
+}
+
+impl Related<super::organizations::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Organizations.def()
+    }
 }
 
 impl Related<super::role_permissions::Entity> for Entity {

@@ -14,6 +14,8 @@ impl MigrationTrait for Migration {
                     .col(pk_auto(UserRoles::Id))
                     .col(integer(UserRoles::UserId))
                     .col(integer(UserRoles::RoleId))
+                    .col(integer_null(UserRoles::OrganizationId))
+                    .col(integer_null(UserRoles::BranchId))
                     .col(timestamp_with_time_zone(UserRoles::CreatedAt))
                     .foreign_key(
                         ForeignKey::create()
@@ -27,6 +29,20 @@ impl MigrationTrait for Migration {
                             .name("fk_user_roles_role_id")
                             .from(UserRoles::Table, UserRoles::RoleId)
                             .to(Alias::new("roles"), Alias::new("id"))
+                            .on_delete(ForeignKeyAction::Cascade),
+                    )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("fk_user_roles_organization_id")
+                            .from(UserRoles::Table, UserRoles::OrganizationId)
+                            .to(Alias::new("organizations"), Alias::new("id"))
+                            .on_delete(ForeignKeyAction::Cascade),
+                    )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("fk_user_roles_branch_id")
+                            .from(UserRoles::Table, UserRoles::BranchId)
+                            .to(Alias::new("branches"), Alias::new("id"))
                             .on_delete(ForeignKeyAction::Cascade),
                     )
                     .to_owned(),
@@ -47,5 +63,7 @@ enum UserRoles {
     Id,
     UserId,
     RoleId,
+    OrganizationId,
+    BranchId,
     CreatedAt,
 }

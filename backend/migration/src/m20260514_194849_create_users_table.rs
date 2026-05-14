@@ -12,13 +12,28 @@ impl MigrationTrait for Migration {
                     .table(Users::Table)
                     .if_not_exists()
                     .col(pk_auto(Users::Id))
+                    .col(integer_null(Users::OrganizationId))
+                    .col(integer_null(Users::BranchId))
                     .col(string_uniq(Users::Username))
                     .col(string_uniq(Users::Email))
                     .col(string(Users::PasswordHash))
-                    .col(string(Users::Role))
                     .col(boolean(Users::IsActive))
                     .col(timestamp_with_time_zone(Users::CreatedAt))
                     .col(timestamp_with_time_zone(Users::UpdatedAt))
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("fk_users_organization_id")
+                            .from(Users::Table, Users::OrganizationId)
+                            .to(Alias::new("organizations"), Alias::new("id"))
+                            .on_delete(ForeignKeyAction::SetNull),
+                    )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("fk_users_branch_id")
+                            .from(Users::Table, Users::BranchId)
+                            .to(Alias::new("branches"), Alias::new("id"))
+                            .on_delete(ForeignKeyAction::SetNull),
+                    )
                     .to_owned(),
             )
             .await
@@ -35,10 +50,11 @@ impl MigrationTrait for Migration {
 enum Users {
     Table,
     Id,
+    OrganizationId,
+    BranchId,
     Username,
     Email,
     PasswordHash,
-    Role,
     IsActive,
     CreatedAt,
     UpdatedAt,

@@ -25,8 +25,8 @@ pub struct UpdateStudentRequest {
 pub struct StudentResponse {
     pub id: i32,
     pub user_id: i32,
-    pub organization_id: Option<i32>,
-    pub branch_id: Option<i32>,
+    pub organization_id: i32,
+    pub branch_id: i32,
     pub first_name: String,
     pub last_name: String,
     pub date_of_birth: String,

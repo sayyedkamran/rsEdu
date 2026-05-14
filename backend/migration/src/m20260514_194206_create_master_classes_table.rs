@@ -12,13 +12,21 @@ impl MigrationTrait for Migration {
                     .table(MasterClasses::Table)
                     .if_not_exists()
                     .col(pk_auto(MasterClasses::Id))
+                    .col(integer(MasterClasses::OrganizationId))
+                    .col(integer(MasterClasses::StreamId))
                     .col(string(MasterClasses::Name))
                     .col(string_null(MasterClasses::NameUrdu))
-                    .col(integer(MasterClasses::StreamId))
                     .col(integer(MasterClasses::Order))
                     .col(boolean(MasterClasses::IsActive))
                     .col(timestamp_with_time_zone(MasterClasses::CreatedAt))
                     .col(timestamp_with_time_zone(MasterClasses::UpdatedAt))
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("fk_master_classes_organization_id")
+                            .from(MasterClasses::Table, MasterClasses::OrganizationId)
+                            .to(Alias::new("organizations"), Alias::new("id"))
+                            .on_delete(ForeignKeyAction::Restrict),
+                    )
                     .foreign_key(
                         ForeignKey::create()
                             .name("fk_master_classes_stream_id")
@@ -42,9 +50,10 @@ impl MigrationTrait for Migration {
 enum MasterClasses {
     Table,
     Id,
+    OrganizationId,
+    StreamId,
     Name,
     NameUrdu,
-    StreamId,
     Order,
     IsActive,
     CreatedAt,

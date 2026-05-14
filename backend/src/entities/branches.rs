@@ -23,6 +23,8 @@ pub struct Model {
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
+    #[sea_orm(has_many = "super::audit_logs::Entity")]
+    AuditLogs,
     #[sea_orm(has_many = "super::branch_contacts::Entity")]
     BranchContacts,
     #[sea_orm(
@@ -43,6 +45,10 @@ pub enum Relation {
         on_delete = "Restrict"
     )]
     Organizations,
+    #[sea_orm(has_many = "super::permissions::Entity")]
+    Permissions,
+    #[sea_orm(has_many = "super::roles::Entity")]
+    Roles,
     #[sea_orm(has_many = "super::staff::Entity")]
     Staff,
     #[sea_orm(has_many = "super::students::Entity")]
@@ -51,6 +57,12 @@ pub enum Relation {
     UserRoles,
     #[sea_orm(has_many = "super::users::Entity")]
     Users,
+}
+
+impl Related<super::audit_logs::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::AuditLogs.def()
+    }
 }
 
 impl Related<super::branch_contacts::Entity> for Entity {
@@ -74,6 +86,18 @@ impl Related<super::classes::Entity> for Entity {
 impl Related<super::organizations::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Organizations.def()
+    }
+}
+
+impl Related<super::permissions::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Permissions.def()
+    }
+}
+
+impl Related<super::roles::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Roles.def()
     }
 }
 

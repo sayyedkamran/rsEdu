@@ -7,15 +7,15 @@ use sea_orm::entity::prelude::*;
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
-    pub title: String,
+    pub organization_id: i32,
     pub stream_id: i32,
+    pub title: String,
     pub start_date: Date,
     pub end_date: Date,
     pub is_active: bool,
     pub description: Option<String>,
     pub created_at: DateTimeWithTimeZone,
     pub updated_at: DateTimeWithTimeZone,
-    pub organization_id: Option<i32>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

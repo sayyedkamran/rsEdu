@@ -8,8 +8,8 @@ pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
     pub user_id: Option<i32>,
-    pub branch_id: Option<i32>,
     pub organization_id: Option<i32>,
+    pub branch_id: Option<i32>,
     pub action: String,
     pub entity: String,
     pub entity_id: Option<i32>,
@@ -20,6 +20,49 @@ pub struct Model {
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {}
+pub enum Relation {
+    #[sea_orm(
+        belongs_to = "super::branches::Entity",
+        from = "Column::BranchId",
+        to = "super::branches::Column::Id",
+        on_update = "NoAction",
+        on_delete = "SetNull"
+    )]
+    Branches,
+    #[sea_orm(
+        belongs_to = "super::organizations::Entity",
+        from = "Column::OrganizationId",
+        to = "super::organizations::Column::Id",
+        on_update = "NoAction",
+        on_delete = "SetNull"
+    )]
+    Organizations,
+    #[sea_orm(
+        belongs_to = "super::users::Entity",
+        from = "Column::UserId",
+        to = "super::users::Column::Id",
+        on_update = "NoAction",
+        on_delete = "SetNull"
+    )]
+    Users,
+}
+
+impl Related<super::branches::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Branches.def()
+    }
+}
+
+impl Related<super::organizations::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Organizations.def()
+    }
+}
+
+impl Related<super::users::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Users.def()
+    }
+}
 
 impl ActiveModelBehavior for ActiveModel {}

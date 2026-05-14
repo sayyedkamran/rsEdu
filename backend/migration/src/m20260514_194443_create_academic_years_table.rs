@@ -12,14 +12,22 @@ impl MigrationTrait for Migration {
                     .table(AcademicYears::Table)
                     .if_not_exists()
                     .col(pk_auto(AcademicYears::Id))
-                    .col(string(AcademicYears::Title))
+                    .col(integer(AcademicYears::OrganizationId))
                     .col(integer(AcademicYears::StreamId))
+                    .col(string(AcademicYears::Title))
                     .col(date(AcademicYears::StartDate))
                     .col(date(AcademicYears::EndDate))
                     .col(boolean(AcademicYears::IsActive))
                     .col(string_null(AcademicYears::Description))
                     .col(timestamp_with_time_zone(AcademicYears::CreatedAt))
                     .col(timestamp_with_time_zone(AcademicYears::UpdatedAt))
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("fk_academic_years_organization_id")
+                            .from(AcademicYears::Table, AcademicYears::OrganizationId)
+                            .to(Alias::new("organizations"), Alias::new("id"))
+                            .on_delete(ForeignKeyAction::Restrict),
+                    )
                     .foreign_key(
                         ForeignKey::create()
                             .name("fk_academic_years_stream_id")
@@ -43,8 +51,9 @@ impl MigrationTrait for Migration {
 enum AcademicYears {
     Table,
     Id,
-    Title,
+    OrganizationId,
     StreamId,
+    Title,
     StartDate,
     EndDate,
     IsActive,

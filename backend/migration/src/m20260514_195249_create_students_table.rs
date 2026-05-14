@@ -13,15 +13,12 @@ impl MigrationTrait for Migration {
                     .if_not_exists()
                     .col(pk_auto(Students::Id))
                     .col(integer(Students::UserId))
+                    .col(integer(Students::OrganizationId))
+                    .col(integer(Students::BranchId))
                     .col(string(Students::FirstName))
                     .col(string(Students::LastName))
-                    .col(string_null(Students::FatherName))
                     .col(date(Students::DateOfBirth))
                     .col(string(Students::Gender))
-                    .col(string_null(Students::Phone))
-                    .col(string_null(Students::Address))
-                    .col(string(Students::Class))
-                    .col(string(Students::Section))
                     .col(string(Students::RollNumber))
                     .col(date(Students::AdmissionDate))
                     .col(boolean(Students::IsActive))
@@ -32,7 +29,21 @@ impl MigrationTrait for Migration {
                             .name("fk_students_user_id")
                             .from(Students::Table, Students::UserId)
                             .to(Alias::new("users"), Alias::new("id"))
-                            .on_delete(ForeignKeyAction::Cascade),
+                            .on_delete(ForeignKeyAction::Restrict),
+                    )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("fk_students_organization_id")
+                            .from(Students::Table, Students::OrganizationId)
+                            .to(Alias::new("organizations"), Alias::new("id"))
+                            .on_delete(ForeignKeyAction::Restrict),
+                    )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("fk_students_branch_id")
+                            .from(Students::Table, Students::BranchId)
+                            .to(Alias::new("branches"), Alias::new("id"))
+                            .on_delete(ForeignKeyAction::Restrict),
                     )
                     .to_owned(),
             )
@@ -51,15 +62,12 @@ enum Students {
     Table,
     Id,
     UserId,
+    OrganizationId,
+    BranchId,
     FirstName,
     LastName,
-    FatherName,
     DateOfBirth,
     Gender,
-    Phone,
-    Address,
-    Class,
-    Section,
     RollNumber,
     AdmissionDate,
     IsActive,

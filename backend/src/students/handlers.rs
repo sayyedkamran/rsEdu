@@ -41,8 +41,8 @@ pub async fn create_student(
 
     let new_student = ActiveModel {
         user_id: ActiveValue::Set(payload.user_id),
-        organization_id: ActiveValue::Set(Some(payload.organization_id)),
-        branch_id: ActiveValue::Set(Some(payload.branch_id)),
+        organization_id: ActiveValue::Set(payload.organization_id),
+        branch_id: ActiveValue::Set(payload.branch_id),
         first_name: ActiveValue::Set(payload.first_name),
         last_name: ActiveValue::Set(payload.last_name),
         date_of_birth: ActiveValue::Set(date_of_birth),

@@ -24,6 +24,8 @@ pub struct Model {
 pub enum Relation {
     #[sea_orm(has_many = "super::academic_years::Entity")]
     AcademicYears,
+    #[sea_orm(has_many = "super::audit_logs::Entity")]
+    AuditLogs,
     #[sea_orm(has_many = "super::branches::Entity")]
     Branches,
     #[sea_orm(
@@ -34,10 +36,22 @@ pub enum Relation {
         on_delete = "SetNull"
     )]
     Cities,
+    #[sea_orm(has_many = "super::master_classes::Entity")]
+    MasterClasses,
+    #[sea_orm(has_many = "super::master_sections::Entity")]
+    MasterSections,
     #[sea_orm(has_many = "super::organization_settings::Entity")]
     OrganizationSettings,
+    #[sea_orm(has_many = "super::permissions::Entity")]
+    Permissions,
+    #[sea_orm(has_many = "super::roles::Entity")]
+    Roles,
     #[sea_orm(has_many = "super::staff::Entity")]
     Staff,
+    #[sea_orm(has_many = "super::staff_types::Entity")]
+    StaffTypes,
+    #[sea_orm(has_many = "super::streams::Entity")]
+    Streams,
     #[sea_orm(has_many = "super::students::Entity")]
     Students,
     #[sea_orm(has_many = "super::user_roles::Entity")]
@@ -49,6 +63,12 @@ pub enum Relation {
 impl Related<super::academic_years::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::AcademicYears.def()
+    }
+}
+
+impl Related<super::audit_logs::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::AuditLogs.def()
     }
 }
 
@@ -64,15 +84,51 @@ impl Related<super::cities::Entity> for Entity {
     }
 }
 
+impl Related<super::master_classes::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::MasterClasses.def()
+    }
+}
+
+impl Related<super::master_sections::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::MasterSections.def()
+    }
+}
+
 impl Related<super::organization_settings::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::OrganizationSettings.def()
     }
 }
 
+impl Related<super::permissions::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Permissions.def()
+    }
+}
+
+impl Related<super::roles::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Roles.def()
+    }
+}
+
 impl Related<super::staff::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Staff.def()
+    }
+}
+
+impl Related<super::staff_types::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::StaffTypes.def()
+    }
+}
+
+impl Related<super::streams::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Streams.def()
     }
 }
 

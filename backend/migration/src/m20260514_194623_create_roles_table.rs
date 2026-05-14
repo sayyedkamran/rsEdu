@@ -12,11 +12,27 @@ impl MigrationTrait for Migration {
                     .table(Roles::Table)
                     .if_not_exists()
                     .col(pk_auto(Roles::Id))
-                    .col(string_uniq(Roles::Name))
+                    .col(integer_null(Roles::OrganizationId))
+                    .col(integer_null(Roles::BranchId))
+                    .col(string(Roles::Name))
                     .col(string_null(Roles::Description))
                     .col(boolean(Roles::IsActive))
                     .col(timestamp_with_time_zone(Roles::CreatedAt))
                     .col(timestamp_with_time_zone(Roles::UpdatedAt))
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("fk_roles_organization_id")
+                            .from(Roles::Table, Roles::OrganizationId)
+                            .to(Alias::new("organizations"), Alias::new("id"))
+                            .on_delete(ForeignKeyAction::Cascade),
+                    )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("fk_roles_branch_id")
+                            .from(Roles::Table, Roles::BranchId)
+                            .to(Alias::new("branches"), Alias::new("id"))
+                            .on_delete(ForeignKeyAction::Cascade),
+                    )
                     .to_owned(),
             )
             .await
@@ -33,6 +49,8 @@ impl MigrationTrait for Migration {
 enum Roles {
     Table,
     Id,
+    OrganizationId,
+    BranchId,
     Name,
     Description,
     IsActive,

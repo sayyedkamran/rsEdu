@@ -12,12 +12,20 @@ impl MigrationTrait for Migration {
                     .table(Streams::Table)
                     .if_not_exists()
                     .col(pk_auto(Streams::Id))
+                    .col(integer(Streams::OrganizationId))
                     .col(string(Streams::Name))
                     .col(string_null(Streams::NameUrdu))
                     .col(string_null(Streams::Description))
                     .col(boolean(Streams::IsActive))
                     .col(timestamp_with_time_zone(Streams::CreatedAt))
                     .col(timestamp_with_time_zone(Streams::UpdatedAt))
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("fk_streams_organization_id")
+                            .from(Streams::Table, Streams::OrganizationId)
+                            .to(Alias::new("organizations"), Alias::new("id"))
+                            .on_delete(ForeignKeyAction::Restrict),
+                    )
                     .to_owned(),
             )
             .await
@@ -34,6 +42,7 @@ impl MigrationTrait for Migration {
 enum Streams {
     Table,
     Id,
+    OrganizationId,
     Name,
     NameUrdu,
     Description,

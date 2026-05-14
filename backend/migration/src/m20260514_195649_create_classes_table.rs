@@ -12,14 +12,22 @@ impl MigrationTrait for Migration {
                     .table(Classes::Table)
                     .if_not_exists()
                     .col(pk_auto(Classes::Id))
+                    .col(integer(Classes::BranchId))
                     .col(integer(Classes::MasterClassId))
                     .col(integer(Classes::MasterSectionId))
                     .col(integer(Classes::AcademicYearId))
-                    .col(integer_null(Classes::ClassTeacherId))
+                    .col(integer_null(Classes::ClassStaffId))
                     .col(integer_null(Classes::Capacity))
                     .col(boolean(Classes::IsActive))
                     .col(timestamp_with_time_zone(Classes::CreatedAt))
                     .col(timestamp_with_time_zone(Classes::UpdatedAt))
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("fk_classes_branch_id")
+                            .from(Classes::Table, Classes::BranchId)
+                            .to(Alias::new("branches"), Alias::new("id"))
+                            .on_delete(ForeignKeyAction::Restrict),
+                    )
                     .foreign_key(
                         ForeignKey::create()
                             .name("fk_classes_master_class_id")
@@ -43,9 +51,9 @@ impl MigrationTrait for Migration {
                     )
                     .foreign_key(
                         ForeignKey::create()
-                            .name("fk_classes_class_teacher_id")
-                            .from(Classes::Table, Classes::ClassTeacherId)
-                            .to(Alias::new("teachers"), Alias::new("id"))
+                            .name("fk_classes_class_staff_id")
+                            .from(Classes::Table, Classes::ClassStaffId)
+                            .to(Alias::new("staff"), Alias::new("id"))
                             .on_delete(ForeignKeyAction::SetNull),
                     )
                     .to_owned(),
@@ -64,10 +72,11 @@ impl MigrationTrait for Migration {
 enum Classes {
     Table,
     Id,
+    BranchId,
     MasterClassId,
     MasterSectionId,
     AcademicYearId,
-    ClassTeacherId,
+    ClassStaffId,
     Capacity,
     IsActive,
     CreatedAt,

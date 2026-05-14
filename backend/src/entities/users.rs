@@ -7,6 +7,8 @@ use sea_orm::entity::prelude::*;
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
+    pub organization_id: Option<i32>,
+    pub branch_id: Option<i32>,
     #[sea_orm(unique)]
     pub username: String,
     #[sea_orm(unique)]
@@ -15,12 +17,12 @@ pub struct Model {
     pub is_active: bool,
     pub created_at: DateTimeWithTimeZone,
     pub updated_at: DateTimeWithTimeZone,
-    pub organization_id: Option<i32>,
-    pub branch_id: Option<i32>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
+    #[sea_orm(has_many = "super::audit_logs::Entity")]
+    AuditLogs,
     #[sea_orm(
         belongs_to = "super::branches::Entity",
         from = "Column::BranchId",
@@ -45,6 +47,12 @@ pub enum Relation {
     Students,
     #[sea_orm(has_many = "super::user_roles::Entity")]
     UserRoles,
+}
+
+impl Related<super::audit_logs::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::AuditLogs.def()
+    }
 }
 
 impl Related<super::branches::Entity> for Entity {
