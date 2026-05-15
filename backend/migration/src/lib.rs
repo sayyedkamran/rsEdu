@@ -27,6 +27,16 @@ mod m20260514_195909_create_addresses_table;
 mod m20260514_200128_create_contacts_table;
 mod m20260514_200312_create_transfers_table;
 mod m20260514_200528_create_audit_logs_table;
+mod m20260515_154014_create_subjects_table;
+mod m20260515_154154_create_class_subjects_table;
+mod m20260515_155149_create_attendance_table;
+mod m20260515_160536_create_class_levels_table;
+mod m20260515_160639_add_class_level_to_master_classes;
+mod m20260515_161117_create_branch_class_levels_table;
+mod m20260515_162742_create_exam_types_table;
+mod m20260515_162854_create_exams_table;
+mod m20260515_163028_create_exam_subjects_table;
+mod m20260515_163223_create_results_table;
 
 pub struct Migrator;
 
@@ -61,6 +71,16 @@ impl MigratorTrait for Migrator {
             Box::new(m20260514_200128_create_contacts_table::Migration),
             Box::new(m20260514_200312_create_transfers_table::Migration),
             Box::new(m20260514_200528_create_audit_logs_table::Migration),
+            Box::new(m20260515_154014_create_subjects_table::Migration),
+            Box::new(m20260515_154154_create_class_subjects_table::Migration),
+            Box::new(m20260515_155149_create_attendance_table::Migration),
+            Box::new(m20260515_160536_create_class_levels_table::Migration),
+            Box::new(m20260515_160639_add_class_level_to_master_classes::Migration),
+            Box::new(m20260515_161117_create_branch_class_levels_table::Migration),
+            Box::new(m20260515_162742_create_exam_types_table::Migration),
+            Box::new(m20260515_162854_create_exams_table::Migration),
+            Box::new(m20260515_163028_create_exam_subjects_table::Migration),
+            Box::new(m20260515_163223_create_results_table::Migration),
         ]
     }
 }
