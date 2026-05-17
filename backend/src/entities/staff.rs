@@ -33,6 +33,8 @@ pub enum Relation {
         on_delete = "Restrict"
     )]
     Branches,
+    #[sea_orm(has_many = "super::class_subjects::Entity")]
+    ClassSubjects,
     #[sea_orm(has_many = "super::classes::Entity")]
     Classes,
     #[sea_orm(
@@ -66,6 +68,12 @@ pub enum Relation {
 impl Related<super::branches::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Branches.def()
+    }
+}
+
+impl Related<super::class_subjects::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::ClassSubjects.def()
     }
 }
 

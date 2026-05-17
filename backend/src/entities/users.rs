@@ -21,6 +21,8 @@ pub struct Model {
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
+    #[sea_orm(has_many = "super::attendance::Entity")]
+    Attendance,
     #[sea_orm(has_many = "super::audit_logs::Entity")]
     AuditLogs,
     #[sea_orm(
@@ -31,6 +33,10 @@ pub enum Relation {
         on_delete = "SetNull"
     )]
     Branches,
+    #[sea_orm(has_many = "super::fee_arrears::Entity")]
+    FeeArrears,
+    #[sea_orm(has_many = "super::fee_payments::Entity")]
+    FeePayments,
     #[sea_orm(has_many = "super::guardians::Entity")]
     Guardians,
     #[sea_orm(
@@ -41,12 +47,20 @@ pub enum Relation {
         on_delete = "SetNull"
     )]
     Organizations,
+    #[sea_orm(has_many = "super::results::Entity")]
+    Results,
     #[sea_orm(has_many = "super::staff::Entity")]
     Staff,
     #[sea_orm(has_many = "super::students::Entity")]
     Students,
     #[sea_orm(has_many = "super::user_roles::Entity")]
     UserRoles,
+}
+
+impl Related<super::attendance::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Attendance.def()
+    }
 }
 
 impl Related<super::audit_logs::Entity> for Entity {
@@ -61,6 +75,18 @@ impl Related<super::branches::Entity> for Entity {
     }
 }
 
+impl Related<super::fee_arrears::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::FeeArrears.def()
+    }
+}
+
+impl Related<super::fee_payments::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::FeePayments.def()
+    }
+}
+
 impl Related<super::guardians::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Guardians.def()
@@ -70,6 +96,12 @@ impl Related<super::guardians::Entity> for Entity {
 impl Related<super::organizations::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Organizations.def()
+    }
+}
+
+impl Related<super::results::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Results.def()
     }
 }
 

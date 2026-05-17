@@ -3,13 +3,16 @@
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
-#[sea_orm(table_name = "streams")]
+#[sea_orm(table_name = "scholarships")]
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
     pub organization_id: i32,
+    pub fee_type_id: Option<i32>,
     pub name: String,
     pub name_urdu: Option<String>,
+    pub coverage_type: String,
+    pub value: i32,
     pub description: Option<String>,
     pub is_active: bool,
     pub created_at: DateTimeWithTimeZone,
@@ -18,12 +21,14 @@ pub struct Model {
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
-    #[sea_orm(has_many = "super::academic_years::Entity")]
-    AcademicYears,
-    #[sea_orm(has_many = "super::exam_types::Entity")]
-    ExamTypes,
-    #[sea_orm(has_many = "super::master_classes::Entity")]
-    MasterClasses,
+    #[sea_orm(
+        belongs_to = "super::fee_types::Entity",
+        from = "Column::FeeTypeId",
+        to = "super::fee_types::Column::Id",
+        on_update = "NoAction",
+        on_delete = "Restrict"
+    )]
+    FeeTypes,
     #[sea_orm(
         belongs_to = "super::organizations::Entity",
         from = "Column::OrganizationId",
@@ -32,25 +37,13 @@ pub enum Relation {
         on_delete = "Restrict"
     )]
     Organizations,
-    #[sea_orm(has_many = "super::subjects::Entity")]
-    Subjects,
+    #[sea_orm(has_many = "super::student_scholarships::Entity")]
+    StudentScholarships,
 }
 
-impl Related<super::academic_years::Entity> for Entity {
+impl Related<super::fee_types::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::AcademicYears.def()
-    }
-}
-
-impl Related<super::exam_types::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::ExamTypes.def()
-    }
-}
-
-impl Related<super::master_classes::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::MasterClasses.def()
+        Relation::FeeTypes.def()
     }
 }
 
@@ -60,9 +53,9 @@ impl Related<super::organizations::Entity> for Entity {
     }
 }
 
-impl Related<super::subjects::Entity> for Entity {
+impl Related<super::student_scholarships::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::Subjects.def()
+        Relation::StudentScholarships.def()
     }
 }
 

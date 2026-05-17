@@ -3,13 +3,14 @@
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
-#[sea_orm(table_name = "streams")]
+#[sea_orm(table_name = "class_levels")]
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
     pub organization_id: i32,
     pub name: String,
     pub name_urdu: Option<String>,
+    pub order: i32,
     pub description: Option<String>,
     pub is_active: bool,
     pub created_at: DateTimeWithTimeZone,
@@ -18,10 +19,10 @@ pub struct Model {
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
-    #[sea_orm(has_many = "super::academic_years::Entity")]
-    AcademicYears,
-    #[sea_orm(has_many = "super::exam_types::Entity")]
-    ExamTypes,
+    #[sea_orm(has_many = "super::branch_class_levels::Entity")]
+    BranchClassLevels,
+    #[sea_orm(has_many = "super::fee_structures::Entity")]
+    FeeStructures,
     #[sea_orm(has_many = "super::master_classes::Entity")]
     MasterClasses,
     #[sea_orm(
@@ -32,19 +33,17 @@ pub enum Relation {
         on_delete = "Restrict"
     )]
     Organizations,
-    #[sea_orm(has_many = "super::subjects::Entity")]
-    Subjects,
 }
 
-impl Related<super::academic_years::Entity> for Entity {
+impl Related<super::branch_class_levels::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::AcademicYears.def()
+        Relation::BranchClassLevels.def()
     }
 }
 
-impl Related<super::exam_types::Entity> for Entity {
+impl Related<super::fee_structures::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::ExamTypes.def()
+        Relation::FeeStructures.def()
     }
 }
 
@@ -57,12 +56,6 @@ impl Related<super::master_classes::Entity> for Entity {
 impl Related<super::organizations::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Organizations.def()
-    }
-}
-
-impl Related<super::subjects::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Subjects.def()
     }
 }
 

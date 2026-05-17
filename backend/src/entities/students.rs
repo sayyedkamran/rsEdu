@@ -23,6 +23,8 @@ pub struct Model {
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
+    #[sea_orm(has_many = "super::attendance::Entity")]
+    Attendance,
     #[sea_orm(
         belongs_to = "super::branches::Entity",
         from = "Column::BranchId",
@@ -31,6 +33,14 @@ pub enum Relation {
         on_delete = "Restrict"
     )]
     Branches,
+    #[sea_orm(has_many = "super::fee_arrears::Entity")]
+    FeeArrears,
+    #[sea_orm(has_many = "super::fee_bills::Entity")]
+    FeeBills,
+    #[sea_orm(has_many = "super::fee_payments::Entity")]
+    FeePayments,
+    #[sea_orm(has_many = "super::fee_structures::Entity")]
+    FeeStructures,
     #[sea_orm(
         belongs_to = "super::organizations::Entity",
         from = "Column::OrganizationId",
@@ -39,8 +49,14 @@ pub enum Relation {
         on_delete = "Restrict"
     )]
     Organizations,
+    #[sea_orm(has_many = "super::results::Entity")]
+    Results,
+    #[sea_orm(has_many = "super::student_discounts::Entity")]
+    StudentDiscounts,
     #[sea_orm(has_many = "super::student_guardians::Entity")]
     StudentGuardians,
+    #[sea_orm(has_many = "super::student_scholarships::Entity")]
+    StudentScholarships,
     #[sea_orm(
         belongs_to = "super::users::Entity",
         from = "Column::UserId",
@@ -51,9 +67,39 @@ pub enum Relation {
     Users,
 }
 
+impl Related<super::attendance::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Attendance.def()
+    }
+}
+
 impl Related<super::branches::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Branches.def()
+    }
+}
+
+impl Related<super::fee_arrears::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::FeeArrears.def()
+    }
+}
+
+impl Related<super::fee_bills::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::FeeBills.def()
+    }
+}
+
+impl Related<super::fee_payments::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::FeePayments.def()
+    }
+}
+
+impl Related<super::fee_structures::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::FeeStructures.def()
     }
 }
 
@@ -63,9 +109,27 @@ impl Related<super::organizations::Entity> for Entity {
     }
 }
 
+impl Related<super::results::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Results.def()
+    }
+}
+
+impl Related<super::student_discounts::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::StudentDiscounts.def()
+    }
+}
+
 impl Related<super::student_guardians::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::StudentGuardians.def()
+    }
+}
+
+impl Related<super::student_scholarships::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::StudentScholarships.def()
     }
 }
 

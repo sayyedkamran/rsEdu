@@ -3,16 +3,22 @@
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
-#[sea_orm(table_name = "classes")]
+#[sea_orm(table_name = "fee_structures")]
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
-    pub branch_id: i32,
-    pub master_class_id: i32,
-    pub master_section_id: i32,
+    pub organization_id: i32,
+    pub branch_id: Option<i32>,
+    pub class_level_id: Option<i32>,
+    pub master_class_id: Option<i32>,
+    pub student_id: Option<i32>,
+    pub fee_type_id: i32,
     pub academic_year_id: i32,
-    pub class_staff_id: Option<i32>,
-    pub capacity: Option<i32>,
+    pub amount: i32,
+    pub due_day: i32,
+    pub bill_generation_frequency: String,
+    pub late_fee_type: Option<String>,
+    pub late_fee_value: Option<i32>,
     pub is_active: bool,
     pub created_at: DateTimeWithTimeZone,
     pub updated_at: DateTimeWithTimeZone,
@@ -28,8 +34,6 @@ pub enum Relation {
         on_delete = "Restrict"
     )]
     AcademicYears,
-    #[sea_orm(has_many = "super::attendance::Entity")]
-    Attendance,
     #[sea_orm(
         belongs_to = "super::branches::Entity",
         from = "Column::BranchId",
@@ -38,10 +42,22 @@ pub enum Relation {
         on_delete = "Restrict"
     )]
     Branches,
-    #[sea_orm(has_many = "super::class_subjects::Entity")]
-    ClassSubjects,
-    #[sea_orm(has_many = "super::exams::Entity")]
-    Exams,
+    #[sea_orm(
+        belongs_to = "super::class_levels::Entity",
+        from = "Column::ClassLevelId",
+        to = "super::class_levels::Column::Id",
+        on_update = "NoAction",
+        on_delete = "Restrict"
+    )]
+    ClassLevels,
+    #[sea_orm(
+        belongs_to = "super::fee_types::Entity",
+        from = "Column::FeeTypeId",
+        to = "super::fee_types::Column::Id",
+        on_update = "NoAction",
+        on_delete = "Restrict"
+    )]
+    FeeTypes,
     #[sea_orm(
         belongs_to = "super::master_classes::Entity",
         from = "Column::MasterClassId",
@@ -51,32 +67,26 @@ pub enum Relation {
     )]
     MasterClasses,
     #[sea_orm(
-        belongs_to = "super::master_sections::Entity",
-        from = "Column::MasterSectionId",
-        to = "super::master_sections::Column::Id",
+        belongs_to = "super::organizations::Entity",
+        from = "Column::OrganizationId",
+        to = "super::organizations::Column::Id",
         on_update = "NoAction",
         on_delete = "Restrict"
     )]
-    MasterSections,
+    Organizations,
     #[sea_orm(
-        belongs_to = "super::staff::Entity",
-        from = "Column::ClassStaffId",
-        to = "super::staff::Column::Id",
+        belongs_to = "super::students::Entity",
+        from = "Column::StudentId",
+        to = "super::students::Column::Id",
         on_update = "NoAction",
-        on_delete = "SetNull"
+        on_delete = "Restrict"
     )]
-    Staff,
+    Students,
 }
 
 impl Related<super::academic_years::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::AcademicYears.def()
-    }
-}
-
-impl Related<super::attendance::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Attendance.def()
     }
 }
 
@@ -86,15 +96,15 @@ impl Related<super::branches::Entity> for Entity {
     }
 }
 
-impl Related<super::class_subjects::Entity> for Entity {
+impl Related<super::class_levels::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::ClassSubjects.def()
+        Relation::ClassLevels.def()
     }
 }
 
-impl Related<super::exams::Entity> for Entity {
+impl Related<super::fee_types::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::Exams.def()
+        Relation::FeeTypes.def()
     }
 }
 
@@ -104,15 +114,15 @@ impl Related<super::master_classes::Entity> for Entity {
     }
 }
 
-impl Related<super::master_sections::Entity> for Entity {
+impl Related<super::organizations::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::MasterSections.def()
+        Relation::Organizations.def()
     }
 }
 
-impl Related<super::staff::Entity> for Entity {
+impl Related<super::students::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::Staff.def()
+        Relation::Students.def()
     }
 }
 

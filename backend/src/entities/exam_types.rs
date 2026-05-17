@@ -3,33 +3,33 @@
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
-#[sea_orm(table_name = "academic_years")]
+#[sea_orm(table_name = "exam_types")]
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
     pub organization_id: i32,
-    pub stream_id: i32,
-    pub title: String,
-    pub start_date: Date,
-    pub end_date: Date,
-    pub is_active: bool,
+    pub stream_id: Option<i32>,
+    pub master_class_id: Option<i32>,
+    pub name: String,
+    pub name_urdu: Option<String>,
     pub description: Option<String>,
+    pub is_active: bool,
     pub created_at: DateTimeWithTimeZone,
     pub updated_at: DateTimeWithTimeZone,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
-    #[sea_orm(has_many = "super::classes::Entity")]
-    Classes,
     #[sea_orm(has_many = "super::exams::Entity")]
     Exams,
-    #[sea_orm(has_many = "super::fee_arrears::Entity")]
-    FeeArrears,
-    #[sea_orm(has_many = "super::fee_bills::Entity")]
-    FeeBills,
-    #[sea_orm(has_many = "super::fee_structures::Entity")]
-    FeeStructures,
+    #[sea_orm(
+        belongs_to = "super::master_classes::Entity",
+        from = "Column::MasterClassId",
+        to = "super::master_classes::Column::Id",
+        on_update = "NoAction",
+        on_delete = "Restrict"
+    )]
+    MasterClasses,
     #[sea_orm(
         belongs_to = "super::organizations::Entity",
         from = "Column::OrganizationId",
@@ -46,16 +46,6 @@ pub enum Relation {
         on_delete = "Restrict"
     )]
     Streams,
-    #[sea_orm(has_many = "super::student_discounts::Entity")]
-    StudentDiscounts,
-    #[sea_orm(has_many = "super::student_scholarships::Entity")]
-    StudentScholarships,
-}
-
-impl Related<super::classes::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Classes.def()
-    }
 }
 
 impl Related<super::exams::Entity> for Entity {
@@ -64,21 +54,9 @@ impl Related<super::exams::Entity> for Entity {
     }
 }
 
-impl Related<super::fee_arrears::Entity> for Entity {
+impl Related<super::master_classes::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::FeeArrears.def()
-    }
-}
-
-impl Related<super::fee_bills::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::FeeBills.def()
-    }
-}
-
-impl Related<super::fee_structures::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::FeeStructures.def()
+        Relation::MasterClasses.def()
     }
 }
 
@@ -91,18 +69,6 @@ impl Related<super::organizations::Entity> for Entity {
 impl Related<super::streams::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Streams.def()
-    }
-}
-
-impl Related<super::student_discounts::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::StudentDiscounts.def()
-    }
-}
-
-impl Related<super::student_scholarships::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::StudentScholarships.def()
     }
 }
 

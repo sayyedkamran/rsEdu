@@ -3,14 +3,17 @@
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
-#[sea_orm(table_name = "streams")]
+#[sea_orm(table_name = "discounts")]
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
     pub organization_id: i32,
     pub name: String,
     pub name_urdu: Option<String>,
+    pub discount_type: String,
+    pub value: i32,
     pub description: Option<String>,
+    pub requires_approval: bool,
     pub is_active: bool,
     pub created_at: DateTimeWithTimeZone,
     pub updated_at: DateTimeWithTimeZone,
@@ -18,12 +21,6 @@ pub struct Model {
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
-    #[sea_orm(has_many = "super::academic_years::Entity")]
-    AcademicYears,
-    #[sea_orm(has_many = "super::exam_types::Entity")]
-    ExamTypes,
-    #[sea_orm(has_many = "super::master_classes::Entity")]
-    MasterClasses,
     #[sea_orm(
         belongs_to = "super::organizations::Entity",
         from = "Column::OrganizationId",
@@ -32,26 +29,8 @@ pub enum Relation {
         on_delete = "Restrict"
     )]
     Organizations,
-    #[sea_orm(has_many = "super::subjects::Entity")]
-    Subjects,
-}
-
-impl Related<super::academic_years::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::AcademicYears.def()
-    }
-}
-
-impl Related<super::exam_types::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::ExamTypes.def()
-    }
-}
-
-impl Related<super::master_classes::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::MasterClasses.def()
-    }
+    #[sea_orm(has_many = "super::student_discounts::Entity")]
+    StudentDiscounts,
 }
 
 impl Related<super::organizations::Entity> for Entity {
@@ -60,9 +39,9 @@ impl Related<super::organizations::Entity> for Entity {
     }
 }
 
-impl Related<super::subjects::Entity> for Entity {
+impl Related<super::student_discounts::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::Subjects.def()
+        Relation::StudentDiscounts.def()
     }
 }
 

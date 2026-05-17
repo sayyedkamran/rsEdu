@@ -3,7 +3,7 @@
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
-#[sea_orm(table_name = "master_classes")]
+#[sea_orm(table_name = "subjects")]
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
@@ -11,29 +11,20 @@ pub struct Model {
     pub stream_id: i32,
     pub name: String,
     pub name_urdu: Option<String>,
-    pub order: i32,
+    pub code: String,
+    pub medium: String,
+    pub description: Option<String>,
     pub is_active: bool,
     pub created_at: DateTimeWithTimeZone,
     pub updated_at: DateTimeWithTimeZone,
-    pub class_level_id: Option<i32>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
-    #[sea_orm(
-        belongs_to = "super::class_levels::Entity",
-        from = "Column::ClassLevelId",
-        to = "super::class_levels::Column::Id",
-        on_update = "NoAction",
-        on_delete = "Restrict"
-    )]
-    ClassLevels,
-    #[sea_orm(has_many = "super::classes::Entity")]
-    Classes,
-    #[sea_orm(has_many = "super::exam_types::Entity")]
-    ExamTypes,
-    #[sea_orm(has_many = "super::fee_structures::Entity")]
-    FeeStructures,
+    #[sea_orm(has_many = "super::class_subjects::Entity")]
+    ClassSubjects,
+    #[sea_orm(has_many = "super::exam_subjects::Entity")]
+    ExamSubjects,
     #[sea_orm(
         belongs_to = "super::organizations::Entity",
         from = "Column::OrganizationId",
@@ -52,27 +43,15 @@ pub enum Relation {
     Streams,
 }
 
-impl Related<super::class_levels::Entity> for Entity {
+impl Related<super::class_subjects::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::ClassLevels.def()
+        Relation::ClassSubjects.def()
     }
 }
 
-impl Related<super::classes::Entity> for Entity {
+impl Related<super::exam_subjects::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::Classes.def()
-    }
-}
-
-impl Related<super::exam_types::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::ExamTypes.def()
-    }
-}
-
-impl Related<super::fee_structures::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::FeeStructures.def()
+        Relation::ExamSubjects.def()
     }
 }
 

@@ -23,8 +23,12 @@ pub struct Model {
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
+    #[sea_orm(has_many = "super::attendance::Entity")]
+    Attendance,
     #[sea_orm(has_many = "super::audit_logs::Entity")]
     AuditLogs,
+    #[sea_orm(has_many = "super::branch_class_levels::Entity")]
+    BranchClassLevels,
     #[sea_orm(has_many = "super::branch_contacts::Entity")]
     BranchContacts,
     #[sea_orm(
@@ -37,6 +41,14 @@ pub enum Relation {
     Cities,
     #[sea_orm(has_many = "super::classes::Entity")]
     Classes,
+    #[sea_orm(has_many = "super::exams::Entity")]
+    Exams,
+    #[sea_orm(has_many = "super::fee_arrears::Entity")]
+    FeeArrears,
+    #[sea_orm(has_many = "super::fee_bills::Entity")]
+    FeeBills,
+    #[sea_orm(has_many = "super::fee_structures::Entity")]
+    FeeStructures,
     #[sea_orm(
         belongs_to = "super::organizations::Entity",
         from = "Column::OrganizationId",
@@ -59,9 +71,21 @@ pub enum Relation {
     Users,
 }
 
+impl Related<super::attendance::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Attendance.def()
+    }
+}
+
 impl Related<super::audit_logs::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::AuditLogs.def()
+    }
+}
+
+impl Related<super::branch_class_levels::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::BranchClassLevels.def()
     }
 }
 
@@ -80,6 +104,30 @@ impl Related<super::cities::Entity> for Entity {
 impl Related<super::classes::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Classes.def()
+    }
+}
+
+impl Related<super::exams::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Exams.def()
+    }
+}
+
+impl Related<super::fee_arrears::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::FeeArrears.def()
+    }
+}
+
+impl Related<super::fee_bills::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::FeeBills.def()
+    }
+}
+
+impl Related<super::fee_structures::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::FeeStructures.def()
     }
 }
 

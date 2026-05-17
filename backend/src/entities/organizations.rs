@@ -36,16 +36,30 @@ pub enum Relation {
         on_delete = "SetNull"
     )]
     Cities,
+    #[sea_orm(has_many = "super::class_levels::Entity")]
+    ClassLevels,
+    #[sea_orm(has_many = "super::discounts::Entity")]
+    Discounts,
+    #[sea_orm(has_many = "super::exam_types::Entity")]
+    ExamTypes,
+    #[sea_orm(has_many = "super::fee_structures::Entity")]
+    FeeStructures,
+    #[sea_orm(has_many = "super::fee_types::Entity")]
+    FeeTypes,
     #[sea_orm(has_many = "super::master_classes::Entity")]
     MasterClasses,
     #[sea_orm(has_many = "super::master_sections::Entity")]
     MasterSections,
     #[sea_orm(has_many = "super::organization_settings::Entity")]
     OrganizationSettings,
+    #[sea_orm(has_many = "super::payment_methods::Entity")]
+    PaymentMethods,
     #[sea_orm(has_many = "super::permissions::Entity")]
     Permissions,
     #[sea_orm(has_many = "super::roles::Entity")]
     Roles,
+    #[sea_orm(has_many = "super::scholarships::Entity")]
+    Scholarships,
     #[sea_orm(has_many = "super::staff::Entity")]
     Staff,
     #[sea_orm(has_many = "super::staff_types::Entity")]
@@ -54,6 +68,8 @@ pub enum Relation {
     Streams,
     #[sea_orm(has_many = "super::students::Entity")]
     Students,
+    #[sea_orm(has_many = "super::subjects::Entity")]
+    Subjects,
     #[sea_orm(has_many = "super::user_roles::Entity")]
     UserRoles,
     #[sea_orm(has_many = "super::users::Entity")]
@@ -84,6 +100,36 @@ impl Related<super::cities::Entity> for Entity {
     }
 }
 
+impl Related<super::class_levels::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::ClassLevels.def()
+    }
+}
+
+impl Related<super::discounts::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Discounts.def()
+    }
+}
+
+impl Related<super::exam_types::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::ExamTypes.def()
+    }
+}
+
+impl Related<super::fee_structures::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::FeeStructures.def()
+    }
+}
+
+impl Related<super::fee_types::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::FeeTypes.def()
+    }
+}
+
 impl Related<super::master_classes::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::MasterClasses.def()
@@ -102,6 +148,12 @@ impl Related<super::organization_settings::Entity> for Entity {
     }
 }
 
+impl Related<super::payment_methods::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::PaymentMethods.def()
+    }
+}
+
 impl Related<super::permissions::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Permissions.def()
@@ -111,6 +163,12 @@ impl Related<super::permissions::Entity> for Entity {
 impl Related<super::roles::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Roles.def()
+    }
+}
+
+impl Related<super::scholarships::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Scholarships.def()
     }
 }
 
@@ -135,6 +193,12 @@ impl Related<super::streams::Entity> for Entity {
 impl Related<super::students::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Students.def()
+    }
+}
+
+impl Related<super::subjects::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Subjects.def()
     }
 }
 
