@@ -37,6 +37,16 @@ mod m20260515_162742_create_exam_types_table;
 mod m20260515_162854_create_exams_table;
 mod m20260515_163028_create_exam_subjects_table;
 mod m20260515_163223_create_results_table;
+mod m20260515_165707_create_payment_methods_table;
+mod m20260515_165812_create_fee_types_table;
+mod m20260515_165923_create_fee_structures_table;
+mod m20260515_170118_create_discounts_table;
+mod m20260515_170258_create_student_discounts_table;
+mod m20260517_105952_create_scholarships_table;
+mod m20260517_110053_create_student_scholarships_table;
+mod m20260517_110151_create_fee_bills_table;
+mod m20260517_110303_create_fee_payments_table;
+mod m20260517_110407_create_fee_arrears_table;
 
 pub struct Migrator;
 
@@ -81,6 +91,16 @@ impl MigratorTrait for Migrator {
             Box::new(m20260515_162854_create_exams_table::Migration),
             Box::new(m20260515_163028_create_exam_subjects_table::Migration),
             Box::new(m20260515_163223_create_results_table::Migration),
+            Box::new(m20260515_165707_create_payment_methods_table::Migration),
+            Box::new(m20260515_165812_create_fee_types_table::Migration),
+            Box::new(m20260515_165923_create_fee_structures_table::Migration),
+            Box::new(m20260515_170118_create_discounts_table::Migration),
+            Box::new(m20260515_170258_create_student_discounts_table::Migration),
+            Box::new(m20260517_105952_create_scholarships_table::Migration),
+            Box::new(m20260517_110053_create_student_scholarships_table::Migration),
+            Box::new(m20260517_110151_create_fee_bills_table::Migration),
+            Box::new(m20260517_110303_create_fee_payments_table::Migration),
+            Box::new(m20260517_110407_create_fee_arrears_table::Migration),
         ]
     }
 }
