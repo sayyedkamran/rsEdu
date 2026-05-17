@@ -17,8 +17,7 @@ use crate::{
 async fn get_user_role(
     db: &sea_orm::DatabaseConnection,
     user_id: i32,
-) -> Result<String, (StatusCode, String)> {
-    // Find user_role record
+) -> Result<(String, i32), (StatusCode, String)> {
     let user_role = user_roles::Entity::find()
         .filter(user_roles::Column::UserId.eq(user_id))
         .one(db)
@@ -26,14 +25,13 @@ async fn get_user_role(
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
         .ok_or((StatusCode::INTERNAL_SERVER_ERROR, "No role assigned to user".to_string()))?;
 
-    // Find role name
     let role = roles::Entity::find_by_id(user_role.role_id)
         .one(db)
         .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
         .ok_or((StatusCode::INTERNAL_SERVER_ERROR, "Role not found".to_string()))?;
 
-    Ok(role.name)
+    Ok((role.name, user_role.role_id))
 }
 
 // POST /api/v1/auth/register
@@ -41,15 +39,15 @@ pub async fn register(
     State(state): State<AppState>,
     Json(payload): Json<RegisterRequest>,
 ) -> Result<Json<AuthResponse>, (StatusCode, String)> {
-    // Hash the password
     let password_hash = hash_password(&payload.password)
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
 
-    // Create new user
     let new_user = ActiveModel {
         username: ActiveValue::Set(payload.username.clone()),
         email: ActiveValue::Set(payload.email.clone()),
         password_hash: ActiveValue::Set(password_hash),
+        organization_id: ActiveValue::Set(Some(payload.organization_id)),
+        branch_id: ActiveValue::Set(payload.branch_id),
         is_active: ActiveValue::Set(true),
         created_at: ActiveValue::Set(Utc::now().into()),
         updated_at: ActiveValue::Set(Utc::now().into()),
@@ -61,10 +59,11 @@ pub async fn register(
         .await
         .map_err(|e| (StatusCode::BAD_REQUEST, e.to_string()))?;
 
-    // Assign role to user
     let new_user_role = user_roles::ActiveModel {
         user_id: ActiveValue::Set(user.id),
         role_id: ActiveValue::Set(payload.role_id),
+        organization_id: ActiveValue::Set(Some(payload.organization_id)),
+        branch_id: ActiveValue::Set(payload.branch_id),
         created_at: ActiveValue::Set(Utc::now().into()),
         ..Default::default()
     };
@@ -74,17 +73,24 @@ pub async fn register(
         .await
         .map_err(|e| (StatusCode::BAD_REQUEST, e.to_string()))?;
 
-    // Fetch role name
-    let role_name = get_user_role(&*state.db, user.id).await?;
+    let (role_name, _) = get_user_role(&*state.db, user.id).await?;
 
-    // Generate JWT token
-    let token = generate_token(user.id, &user.email, &role_name, &state.jwt_secret)
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
+    let token = generate_token(
+        user.id,
+        &user.email,
+        &role_name,
+        Some(payload.organization_id),
+        payload.branch_id,
+        &state.jwt_secret,
+    )
+    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
 
     Ok(Json(AuthResponse {
         token,
         username: user.username,
         role: role_name,
+        organization_id: user.organization_id,
+        branch_id: user.branch_id,
     }))
 }
 
@@ -93,7 +99,6 @@ pub async fn login(
     State(state): State<AppState>,
     Json(payload): Json<LoginRequest>,
 ) -> Result<Json<AuthResponse>, (StatusCode, String)> {
-    // Find user by email
     let user = users::Entity::find()
         .filter(users::Column::Email.eq(&payload.email))
         .one(&*state.db)
@@ -101,7 +106,6 @@ pub async fn login(
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
         .ok_or((StatusCode::UNAUTHORIZED, "Invalid email or password".to_string()))?;
 
-    // Verify password
     let is_valid = verify_password(&payload.password, &user.password_hash)
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
 
@@ -109,21 +113,27 @@ pub async fn login(
         return Err((StatusCode::UNAUTHORIZED, "Invalid email or password".to_string()));
     }
 
-    // Check if user is active
     if !user.is_active {
         return Err((StatusCode::UNAUTHORIZED, "Account is disabled".to_string()));
     }
 
-    // Fetch role name
-    let role_name = get_user_role(&*state.db, user.id).await?;
+    let (role_name, _) = get_user_role(&*state.db, user.id).await?;
 
-    // Generate JWT token
-    let token = generate_token(user.id, &user.email, &role_name, &state.jwt_secret)
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
+    let token = generate_token(
+        user.id,
+        &user.email,
+        &role_name,
+        user.organization_id,
+        user.branch_id,
+        &state.jwt_secret,
+    )
+    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
 
     Ok(Json(AuthResponse {
         token,
         username: user.username,
         role: role_name,
+        organization_id: user.organization_id,
+        branch_id: user.branch_id,
     }))
 }

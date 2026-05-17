@@ -9,10 +9,12 @@ use chrono::{Utc, Duration};
 // JWT Claims structure
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Claims {
-    pub sub: String,      // Subject (user id)
-    pub email: String,    // User email
-    pub role: String,     // User role
-    pub exp: usize,       // Expiry timestamp
+    pub sub: String,
+    pub email: String,
+    pub role: String,
+    pub organization_id: Option<i32>,
+    pub branch_id: Option<i32>,
+    pub exp: usize,
 }
 
 // Hash a plain password using Argon2
@@ -37,7 +39,14 @@ pub fn verify_password(password: &str, hash: &str) -> Result<bool, String> {
 }
 
 // Generate a JWT token
-pub fn generate_token(user_id: i32, email: &str, role: &str, secret: &str) -> Result<String, String> {
+pub fn generate_token(
+    user_id: i32,
+    email: &str,
+    role: &str,
+    organization_id: Option<i32>,
+    branch_id: Option<i32>,
+    secret: &str,
+) -> Result<String, String> {
     let expiration = Utc::now()
         .checked_add_signed(Duration::hours(24))
         .expect("Valid timestamp")
@@ -47,6 +56,8 @@ pub fn generate_token(user_id: i32, email: &str, role: &str, secret: &str) -> Re
         sub: user_id.to_string(),
         email: email.to_string(),
         role: role.to_string(),
+        organization_id,
+        branch_id,
         exp: expiration,
     };
 
