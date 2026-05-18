@@ -11,6 +11,7 @@ mod entities;
 mod students;
 mod provinces;
 mod cities;
+mod organizations;
 
 #[derive(Clone)]
 pub struct AppState {
@@ -54,6 +55,12 @@ async fn main() {
         .route("/api/v1/cities/{id}", get(cities::handlers::get_city))
         .route("/api/v1/cities/{id}", put(cities::handlers::update_city))
         .route("/api/v1/cities/{id}", delete(cities::handlers::delete_city))
+        // Organization routes
+        .route("/api/v1/organizations", post(organizations::handlers::create_organization))
+        .route("/api/v1/organizations", get(organizations::handlers::get_organizations))
+        .route("/api/v1/organizations/{id}", get(organizations::handlers::get_organization))
+        .route("/api/v1/organizations/{id}", put(organizations::handlers::update_organization))
+        .route("/api/v1/organizations/{id}", delete(organizations::handlers::delete_organization))
         .layer(middleware::from_fn_with_state(
             state.clone(),
             auth::middleware::auth_middleware,
