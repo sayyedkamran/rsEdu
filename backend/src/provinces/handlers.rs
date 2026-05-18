@@ -1,5 +1,5 @@
 use axum::{
-    extract::{Path, State},
+    extract::{Path, State, Extension},
     http::StatusCode,
     Json,
 };
@@ -8,6 +8,7 @@ use chrono::Utc;
 
 use crate::{
     AppState,
+    auth::{utils::Claims, permissions::authorize},
     entities::provinces::{self, ActiveModel},
     provinces::dto::{CreateProvinceRequest, ProvinceResponse, UpdateProvinceRequest},
 };
@@ -25,8 +26,11 @@ fn to_response(province: provinces::Model) -> ProvinceResponse {
 // POST /api/v1/provinces
 pub async fn create_province(
     State(state): State<AppState>,
+    Extension(claims): Extension<Claims>,
     Json(payload): Json<CreateProvinceRequest>,
 ) -> Result<Json<ProvinceResponse>, (StatusCode, String)> {
+    authorize(&*state.db, &claims, "province:create", None, None).await?;
+
     let new_province = ActiveModel {
         name: ActiveValue::Set(payload.name),
         name_urdu: ActiveValue::Set(payload.name_urdu),
@@ -48,7 +52,10 @@ pub async fn create_province(
 // GET /api/v1/provinces
 pub async fn get_provinces(
     State(state): State<AppState>,
+    Extension(claims): Extension<Claims>,
 ) -> Result<Json<Vec<ProvinceResponse>>, (StatusCode, String)> {
+    authorize(&*state.db, &claims, "province:read", None, None).await?;
+
     let provinces = provinces::Entity::find()
         .all(&*state.db)
         .await
@@ -60,8 +67,11 @@ pub async fn get_provinces(
 // GET /api/v1/provinces/{id}
 pub async fn get_province(
     State(state): State<AppState>,
+    Extension(claims): Extension<Claims>,
     Path(id): Path<i32>,
 ) -> Result<Json<ProvinceResponse>, (StatusCode, String)> {
+    authorize(&*state.db, &claims, "province:read", None, None).await?;
+
     let province = provinces::Entity::find_by_id(id)
         .one(&*state.db)
         .await
@@ -74,9 +84,12 @@ pub async fn get_province(
 // PUT /api/v1/provinces/{id}
 pub async fn update_province(
     State(state): State<AppState>,
+    Extension(claims): Extension<Claims>,
     Path(id): Path<i32>,
     Json(payload): Json<UpdateProvinceRequest>,
 ) -> Result<Json<ProvinceResponse>, (StatusCode, String)> {
+    authorize(&*state.db, &claims, "province:update", None, None).await?;
+
     let province = provinces::Entity::find_by_id(id)
         .one(&*state.db)
         .await
@@ -111,8 +124,11 @@ pub async fn update_province(
 // DELETE /api/v1/provinces/{id}
 pub async fn delete_province(
     State(state): State<AppState>,
+    Extension(claims): Extension<Claims>,
     Path(id): Path<i32>,
 ) -> Result<StatusCode, (StatusCode, String)> {
+    authorize(&*state.db, &claims, "province:delete", None, None).await?;
+
     let province = provinces::Entity::find_by_id(id)
         .one(&*state.db)
         .await
