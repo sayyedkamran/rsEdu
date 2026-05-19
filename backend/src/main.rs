@@ -24,6 +24,12 @@ mod classes;
 mod subjects;
 mod guardians;
 mod fee_types;
+mod fee_structures;
+mod fee_bills;
+mod fee_payments;
+mod attendance;
+mod exam_types;
+mod results;
 
 #[derive(Clone)]
 pub struct AppState {
@@ -145,6 +151,42 @@ async fn main() {
         .route("/api/v1/fee-types/{id}", get(fee_types::handlers::get_fee_type))
         .route("/api/v1/fee-types/{id}", put(fee_types::handlers::update_fee_type))
         .route("/api/v1/fee-types/{id}", delete(fee_types::handlers::delete_fee_type))
+        // Fee structure routes
+        .route("/api/v1/fee-structures", post(fee_structures::handlers::create_fee_structure))
+        .route("/api/v1/fee-structures", get(fee_structures::handlers::get_fee_structures))
+        .route("/api/v1/fee-structures/{id}", get(fee_structures::handlers::get_fee_structure))
+        .route("/api/v1/fee-structures/{id}", put(fee_structures::handlers::update_fee_structure))
+        .route("/api/v1/fee-structures/{id}", delete(fee_structures::handlers::delete_fee_structure))
+        // Fee bill routes
+        .route("/api/v1/fee-bills", post(fee_bills::handlers::create_fee_bill))
+        .route("/api/v1/fee-bills", get(fee_bills::handlers::get_fee_bills))
+        .route("/api/v1/fee-bills/{id}", get(fee_bills::handlers::get_fee_bill))
+        .route("/api/v1/fee-bills/{id}", put(fee_bills::handlers::update_fee_bill))
+        .route("/api/v1/fee-bills/{id}", delete(fee_bills::handlers::delete_fee_bill))
+        // Fee payment routes
+        .route("/api/v1/fee-payments", post(fee_payments::handlers::create_fee_payment))
+        .route("/api/v1/fee-payments", get(fee_payments::handlers::get_fee_payments))
+        .route("/api/v1/fee-payments/{id}", get(fee_payments::handlers::get_fee_payment))
+        .route("/api/v1/fee-payments/{id}", put(fee_payments::handlers::update_fee_payment))
+        .route("/api/v1/fee-payments/{id}", delete(fee_payments::handlers::delete_fee_payment))
+        // Attendance routes
+        .route("/api/v1/attendance", post(attendance::handlers::create_attendance))
+        .route("/api/v1/attendance", get(attendance::handlers::get_attendance))
+        .route("/api/v1/attendance/{id}", get(attendance::handlers::get_attendance_record))
+        .route("/api/v1/attendance/{id}", put(attendance::handlers::update_attendance))
+        .route("/api/v1/attendance/{id}", delete(attendance::handlers::delete_attendance))
+        // Exam type routes
+        .route("/api/v1/exam-types", post(exam_types::handlers::create_exam_type))
+        .route("/api/v1/exam-types", get(exam_types::handlers::get_exam_types))
+        .route("/api/v1/exam-types/{id}", get(exam_types::handlers::get_exam_type))
+        .route("/api/v1/exam-types/{id}", put(exam_types::handlers::update_exam_type))
+        .route("/api/v1/exam-types/{id}", delete(exam_types::handlers::delete_exam_type))
+        // Result routes
+        .route("/api/v1/results", post(results::handlers::create_result))
+        .route("/api/v1/results", get(results::handlers::get_results))
+        .route("/api/v1/results/{id}", get(results::handlers::get_result))
+        .route("/api/v1/results/{id}", put(results::handlers::update_result))
+        .route("/api/v1/results/{id}", delete(results::handlers::delete_result))
 
         .layer(middleware::from_fn_with_state(
             state.clone(),
