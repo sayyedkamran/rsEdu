@@ -17,6 +17,7 @@ mod streams;
 mod class_levels;
 mod master_classes;
 mod master_sections;
+mod academic_years;
 
 #[derive(Clone)]
 pub struct AppState {
@@ -96,7 +97,13 @@ async fn main() {
         .route("/api/v1/master-sections/{id}", get(master_sections::handlers::get_master_section))
         .route("/api/v1/master-sections/{id}", put(master_sections::handlers::update_master_section))
         .route("/api/v1/master-sections/{id}", delete(master_sections::handlers::delete_master_section))
-        
+        // Academic year routes
+        .route("/api/v1/academic-years", post(academic_years::handlers::create_academic_year))
+        .route("/api/v1/academic-years", get(academic_years::handlers::get_academic_years))
+        .route("/api/v1/academic-years/{id}", get(academic_years::handlers::get_academic_year))
+        .route("/api/v1/academic-years/{id}", put(academic_years::handlers::update_academic_year))
+        .route("/api/v1/academic-years/{id}", delete(academic_years::handlers::delete_academic_year))
+
         .layer(middleware::from_fn_with_state(
             state.clone(),
             auth::middleware::auth_middleware,
