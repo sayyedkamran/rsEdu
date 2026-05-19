@@ -18,6 +18,12 @@ mod class_levels;
 mod master_classes;
 mod master_sections;
 mod academic_years;
+mod staff_types;
+mod staff;
+mod classes;
+mod subjects;
+mod guardians;
+mod fee_types;
 
 #[derive(Clone)]
 pub struct AppState {
@@ -103,6 +109,42 @@ async fn main() {
         .route("/api/v1/academic-years/{id}", get(academic_years::handlers::get_academic_year))
         .route("/api/v1/academic-years/{id}", put(academic_years::handlers::update_academic_year))
         .route("/api/v1/academic-years/{id}", delete(academic_years::handlers::delete_academic_year))
+        // Staff type routes
+        .route("/api/v1/staff-types", post(staff_types::handlers::create_staff_type))
+        .route("/api/v1/staff-types", get(staff_types::handlers::get_staff_types))
+        .route("/api/v1/staff-types/{id}", get(staff_types::handlers::get_staff_type))
+        .route("/api/v1/staff-types/{id}", put(staff_types::handlers::update_staff_type))
+        .route("/api/v1/staff-types/{id}", delete(staff_types::handlers::delete_staff_type))
+        // Staff routes
+        .route("/api/v1/staff", post(staff::handlers::create_staff))
+        .route("/api/v1/staff", get(staff::handlers::get_all_staff))
+        .route("/api/v1/staff/{id}", get(staff::handlers::get_staff_member))
+        .route("/api/v1/staff/{id}", put(staff::handlers::update_staff))
+        .route("/api/v1/staff/{id}", delete(staff::handlers::delete_staff))
+        // Class routes
+        .route("/api/v1/classes", post(classes::handlers::create_class))
+        .route("/api/v1/classes", get(classes::handlers::get_classes))
+        .route("/api/v1/classes/{id}", get(classes::handlers::get_class))
+        .route("/api/v1/classes/{id}", put(classes::handlers::update_class))
+        .route("/api/v1/classes/{id}", delete(classes::handlers::delete_class))
+        // Subject routes
+        .route("/api/v1/subjects", post(subjects::handlers::create_subject))
+        .route("/api/v1/subjects", get(subjects::handlers::get_subjects))
+        .route("/api/v1/subjects/{id}", get(subjects::handlers::get_subject))
+        .route("/api/v1/subjects/{id}", put(subjects::handlers::update_subject))
+        .route("/api/v1/subjects/{id}", delete(subjects::handlers::delete_subject))
+        // Guardian routes
+        .route("/api/v1/guardians", post(guardians::handlers::create_guardian))
+        .route("/api/v1/guardians", get(guardians::handlers::get_guardians))
+        .route("/api/v1/guardians/{id}", get(guardians::handlers::get_guardian))
+        .route("/api/v1/guardians/{id}", put(guardians::handlers::update_guardian))
+        .route("/api/v1/guardians/{id}", delete(guardians::handlers::delete_guardian))
+        // Fee type routes
+        .route("/api/v1/fee-types", post(fee_types::handlers::create_fee_type))
+        .route("/api/v1/fee-types", get(fee_types::handlers::get_fee_types))
+        .route("/api/v1/fee-types/{id}", get(fee_types::handlers::get_fee_type))
+        .route("/api/v1/fee-types/{id}", put(fee_types::handlers::update_fee_type))
+        .route("/api/v1/fee-types/{id}", delete(fee_types::handlers::delete_fee_type))
 
         .layer(middleware::from_fn_with_state(
             state.clone(),
