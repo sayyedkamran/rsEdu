@@ -13,6 +13,7 @@ mod provinces;
 mod cities;
 mod organizations;
 mod branches;
+mod streams;
 
 #[derive(Clone)]
 pub struct AppState {
@@ -68,6 +69,12 @@ async fn main() {
         .route("/api/v1/branches/{id}", get(branches::handlers::get_branch))
         .route("/api/v1/branches/{id}", put(branches::handlers::update_branch))
         .route("/api/v1/branches/{id}", delete(branches::handlers::delete_branch))
+        // Stream routes
+        .route("/api/v1/streams", post(streams::handlers::create_stream))
+        .route("/api/v1/streams", get(streams::handlers::get_streams))
+        .route("/api/v1/streams/{id}", get(streams::handlers::get_stream))
+        .route("/api/v1/streams/{id}", put(streams::handlers::update_stream))
+        .route("/api/v1/streams/{id}", delete(streams::handlers::delete_stream))
 
         
         .layer(middleware::from_fn_with_state(
