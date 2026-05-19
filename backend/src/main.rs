@@ -15,6 +15,7 @@ mod organizations;
 mod branches;
 mod streams;
 mod class_levels;
+mod master_classes;
 
 #[derive(Clone)]
 pub struct AppState {
@@ -82,6 +83,12 @@ async fn main() {
         .route("/api/v1/class-levels/{id}", get(class_levels::handlers::get_class_level))
         .route("/api/v1/class-levels/{id}", put(class_levels::handlers::update_class_level))
         .route("/api/v1/class-levels/{id}", delete(class_levels::handlers::delete_class_level))
+        // Master class routes
+        .route("/api/v1/master-classes", post(master_classes::handlers::create_master_class))
+        .route("/api/v1/master-classes", get(master_classes::handlers::get_master_classes))
+        .route("/api/v1/master-classes/{id}", get(master_classes::handlers::get_master_class))
+        .route("/api/v1/master-classes/{id}", put(master_classes::handlers::update_master_class))
+        .route("/api/v1/master-classes/{id}", delete(master_classes::handlers::delete_master_class))
 
         
         .layer(middleware::from_fn_with_state(
