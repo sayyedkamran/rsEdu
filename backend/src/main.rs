@@ -30,6 +30,12 @@ mod fee_payments;
 mod attendance;
 mod exam_types;
 mod results;
+mod payment_methods;
+mod discounts;
+mod scholarships;
+mod exams;
+mod exam_subjects;
+mod transfers;
 
 #[derive(Clone)]
 pub struct AppState {
@@ -187,6 +193,42 @@ async fn main() {
         .route("/api/v1/results/{id}", get(results::handlers::get_result))
         .route("/api/v1/results/{id}", put(results::handlers::update_result))
         .route("/api/v1/results/{id}", delete(results::handlers::delete_result))
+        // Payment method routes
+        .route("/api/v1/payment-methods", post(payment_methods::handlers::create_payment_method))
+        .route("/api/v1/payment-methods", get(payment_methods::handlers::get_payment_methods))
+        .route("/api/v1/payment-methods/{id}", get(payment_methods::handlers::get_payment_method))
+        .route("/api/v1/payment-methods/{id}", put(payment_methods::handlers::update_payment_method))
+        .route("/api/v1/payment-methods/{id}", delete(payment_methods::handlers::delete_payment_method))
+        // Discount routes
+        .route("/api/v1/discounts", post(discounts::handlers::create_discount))
+        .route("/api/v1/discounts", get(discounts::handlers::get_discounts))
+        .route("/api/v1/discounts/{id}", get(discounts::handlers::get_discount))
+        .route("/api/v1/discounts/{id}", put(discounts::handlers::update_discount))
+        .route("/api/v1/discounts/{id}", delete(discounts::handlers::delete_discount))
+        // Scholarship routes
+        .route("/api/v1/scholarships", post(scholarships::handlers::create_scholarship))
+        .route("/api/v1/scholarships", get(scholarships::handlers::get_scholarships))
+        .route("/api/v1/scholarships/{id}", get(scholarships::handlers::get_scholarship))
+        .route("/api/v1/scholarships/{id}", put(scholarships::handlers::update_scholarship))
+        .route("/api/v1/scholarships/{id}", delete(scholarships::handlers::delete_scholarship))
+        // Exam routes
+        .route("/api/v1/exams", post(exams::handlers::create_exam))
+        .route("/api/v1/exams", get(exams::handlers::get_exams))
+        .route("/api/v1/exams/{id}", get(exams::handlers::get_exam))
+        .route("/api/v1/exams/{id}", put(exams::handlers::update_exam))
+        .route("/api/v1/exams/{id}", delete(exams::handlers::delete_exam))
+        // Exam subject routes
+        .route("/api/v1/exam-subjects", post(exam_subjects::handlers::create_exam_subject))
+        .route("/api/v1/exam-subjects", get(exam_subjects::handlers::get_exam_subjects))
+        .route("/api/v1/exam-subjects/{id}", get(exam_subjects::handlers::get_exam_subject))
+        .route("/api/v1/exam-subjects/{id}", put(exam_subjects::handlers::update_exam_subject))
+        .route("/api/v1/exam-subjects/{id}", delete(exam_subjects::handlers::delete_exam_subject))
+        // Transfer routes
+        .route("/api/v1/transfers", post(transfers::handlers::create_transfer))
+        .route("/api/v1/transfers", get(transfers::handlers::get_transfers))
+        .route("/api/v1/transfers/{id}", get(transfers::handlers::get_transfer))
+        .route("/api/v1/transfers/{id}", put(transfers::handlers::update_transfer))
+        .route("/api/v1/transfers/{id}", delete(transfers::handlers::delete_transfer))
 
         .layer(middleware::from_fn_with_state(
             state.clone(),
