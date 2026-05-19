@@ -1,5 +1,5 @@
 use axum::{
-    extract::{Path, State},
+    extract::{Path, State, Extension},
     http::StatusCode,
     Json,
 };
@@ -8,6 +8,7 @@ use chrono::Utc;
 
 use crate::{
     AppState,
+    auth::{utils::Claims, permissions::authorize},
     entities::organizations::{self, ActiveModel},
     organizations::dto::{CreateOrganizationRequest, OrganizationResponse, UpdateOrganizationRequest},
 };
@@ -30,8 +31,11 @@ fn to_response(org: organizations::Model) -> OrganizationResponse {
 // POST /api/v1/organizations
 pub async fn create_organization(
     State(state): State<AppState>,
+    Extension(claims): Extension<Claims>,
     Json(payload): Json<CreateOrganizationRequest>,
 ) -> Result<Json<OrganizationResponse>, (StatusCode, String)> {
+    authorize(&*state.db, &claims, "organization:create", None, None).await?;
+
     let new_org = ActiveModel {
         name: ActiveValue::Set(payload.name),
         name_urdu: ActiveValue::Set(payload.name_urdu),
@@ -58,7 +62,10 @@ pub async fn create_organization(
 // GET /api/v1/organizations
 pub async fn get_organizations(
     State(state): State<AppState>,
+    Extension(claims): Extension<Claims>,
 ) -> Result<Json<Vec<OrganizationResponse>>, (StatusCode, String)> {
+    authorize(&*state.db, &claims, "organization:read", None, None).await?;
+
     let orgs = organizations::Entity::find()
         .all(&*state.db)
         .await
@@ -70,6 +77,7 @@ pub async fn get_organizations(
 // GET /api/v1/organizations/{id}
 pub async fn get_organization(
     State(state): State<AppState>,
+    Extension(claims): Extension<Claims>,
     Path(id): Path<i32>,
 ) -> Result<Json<OrganizationResponse>, (StatusCode, String)> {
     let org = organizations::Entity::find_by_id(id)
@@ -78,12 +86,15 @@ pub async fn get_organization(
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
         .ok_or((StatusCode::NOT_FOUND, "Organization not found".to_string()))?;
 
+    authorize(&*state.db, &claims, "organization:read", Some(org.id), None).await?;
+
     Ok(Json(to_response(org)))
 }
 
 // PUT /api/v1/organizations/{id}
 pub async fn update_organization(
     State(state): State<AppState>,
+    Extension(claims): Extension<Claims>,
     Path(id): Path<i32>,
     Json(payload): Json<UpdateOrganizationRequest>,
 ) -> Result<Json<OrganizationResponse>, (StatusCode, String)> {
@@ -92,6 +103,8 @@ pub async fn update_organization(
         .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
         .ok_or((StatusCode::NOT_FOUND, "Organization not found".to_string()))?;
+
+    authorize(&*state.db, &claims, "organization:update", Some(org.id), None).await?;
 
     let mut active_model: ActiveModel = org.into();
 
@@ -136,6 +149,7 @@ pub async fn update_organization(
 // DELETE /api/v1/organizations/{id}
 pub async fn delete_organization(
     State(state): State<AppState>,
+    Extension(claims): Extension<Claims>,
     Path(id): Path<i32>,
 ) -> Result<StatusCode, (StatusCode, String)> {
     let org = organizations::Entity::find_by_id(id)
@@ -143,6 +157,8 @@ pub async fn delete_organization(
         .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
         .ok_or((StatusCode::NOT_FOUND, "Organization not found".to_string()))?;
+
+    authorize(&*state.db, &claims, "organization:delete", Some(org.id), None).await?;
 
     let active_model: ActiveModel = org.into();
 

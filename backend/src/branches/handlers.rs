@@ -1,5 +1,5 @@
 use axum::{
-    extract::{Path, State},
+    extract::{Path, State, Extension},
     http::StatusCode,
     Json,
 };
@@ -8,6 +8,7 @@ use chrono::Utc;
 
 use crate::{
     AppState,
+    auth::{utils::Claims, permissions::authorize},
     entities::branches::{self, ActiveModel},
     branches::dto::{CreateBranchRequest, BranchResponse, UpdateBranchRequest},
 };
@@ -30,8 +31,11 @@ fn to_response(branch: branches::Model) -> BranchResponse {
 // POST /api/v1/branches
 pub async fn create_branch(
     State(state): State<AppState>,
+    Extension(claims): Extension<Claims>,
     Json(payload): Json<CreateBranchRequest>,
 ) -> Result<Json<BranchResponse>, (StatusCode, String)> {
+    authorize(&*state.db, &claims, "branch:create", Some(payload.organization_id), None).await?;
+
     let new_branch = ActiveModel {
         organization_id: ActiveValue::Set(payload.organization_id),
         name: ActiveValue::Set(payload.name),
@@ -58,8 +62,21 @@ pub async fn create_branch(
 // GET /api/v1/branches
 pub async fn get_branches(
     State(state): State<AppState>,
+    Extension(claims): Extension<Claims>,
 ) -> Result<Json<Vec<BranchResponse>>, (StatusCode, String)> {
-    let branches = branches::Entity::find()
+    authorize(&*state.db, &claims, "branch:read", None, None).await?;
+
+    use sea_orm::{ColumnTrait, QueryFilter};
+    use crate::auth::permissions::get_data_scope;
+
+    let scope = get_data_scope(&claims);
+    let mut query = branches::Entity::find();
+
+    if let Some(org_id) = scope.organization_id {
+        query = query.filter(branches::Column::OrganizationId.eq(org_id));
+    }
+
+    let branches = query
         .all(&*state.db)
         .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
@@ -70,6 +87,7 @@ pub async fn get_branches(
 // GET /api/v1/branches/{id}
 pub async fn get_branch(
     State(state): State<AppState>,
+    Extension(claims): Extension<Claims>,
     Path(id): Path<i32>,
 ) -> Result<Json<BranchResponse>, (StatusCode, String)> {
     let branch = branches::Entity::find_by_id(id)
@@ -78,12 +96,15 @@ pub async fn get_branch(
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
         .ok_or((StatusCode::NOT_FOUND, "Branch not found".to_string()))?;
 
+    authorize(&*state.db, &claims, "branch:read", Some(branch.organization_id), None).await?;
+
     Ok(Json(to_response(branch)))
 }
 
 // PUT /api/v1/branches/{id}
 pub async fn update_branch(
     State(state): State<AppState>,
+    Extension(claims): Extension<Claims>,
     Path(id): Path<i32>,
     Json(payload): Json<UpdateBranchRequest>,
 ) -> Result<Json<BranchResponse>, (StatusCode, String)> {
@@ -92,6 +113,8 @@ pub async fn update_branch(
         .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
         .ok_or((StatusCode::NOT_FOUND, "Branch not found".to_string()))?;
+
+    authorize(&*state.db, &claims, "branch:update", Some(branch.organization_id), None).await?;
 
     let mut active_model: ActiveModel = branch.into();
 
@@ -133,6 +156,7 @@ pub async fn update_branch(
 // DELETE /api/v1/branches/{id}
 pub async fn delete_branch(
     State(state): State<AppState>,
+    Extension(claims): Extension<Claims>,
     Path(id): Path<i32>,
 ) -> Result<StatusCode, (StatusCode, String)> {
     let branch = branches::Entity::find_by_id(id)
@@ -140,6 +164,8 @@ pub async fn delete_branch(
         .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
         .ok_or((StatusCode::NOT_FOUND, "Branch not found".to_string()))?;
+
+    authorize(&*state.db, &claims, "branch:delete", Some(branch.organization_id), None).await?;
 
     let active_model: ActiveModel = branch.into();
 

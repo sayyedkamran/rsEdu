@@ -1,5 +1,5 @@
 use axum::{
-    extract::{Path, State},
+    extract::{Path, State, Extension},
     http::StatusCode,
     Json,
 };
@@ -8,6 +8,7 @@ use chrono::Utc;
 
 use crate::{
     AppState,
+    auth::{utils::Claims, permissions::authorize},
     entities::cities::{self, ActiveModel},
     cities::dto::{CreateCityRequest, CityResponse, UpdateCityRequest},
 };
@@ -25,8 +26,11 @@ fn to_response(city: cities::Model) -> CityResponse {
 // POST /api/v1/cities
 pub async fn create_city(
     State(state): State<AppState>,
+    Extension(claims): Extension<Claims>,
     Json(payload): Json<CreateCityRequest>,
 ) -> Result<Json<CityResponse>, (StatusCode, String)> {
+    authorize(&*state.db, &claims, "city:create", None, None).await?;
+
     let new_city = ActiveModel {
         name: ActiveValue::Set(payload.name),
         name_urdu: ActiveValue::Set(payload.name_urdu),
@@ -48,7 +52,10 @@ pub async fn create_city(
 // GET /api/v1/cities
 pub async fn get_cities(
     State(state): State<AppState>,
+    Extension(claims): Extension<Claims>,
 ) -> Result<Json<Vec<CityResponse>>, (StatusCode, String)> {
+    authorize(&*state.db, &claims, "city:read", None, None).await?;
+
     let cities = cities::Entity::find()
         .all(&*state.db)
         .await
@@ -60,8 +67,11 @@ pub async fn get_cities(
 // GET /api/v1/cities/{id}
 pub async fn get_city(
     State(state): State<AppState>,
+    Extension(claims): Extension<Claims>,
     Path(id): Path<i32>,
 ) -> Result<Json<CityResponse>, (StatusCode, String)> {
+    authorize(&*state.db, &claims, "city:read", None, None).await?;
+
     let city = cities::Entity::find_by_id(id)
         .one(&*state.db)
         .await
@@ -74,9 +84,12 @@ pub async fn get_city(
 // PUT /api/v1/cities/{id}
 pub async fn update_city(
     State(state): State<AppState>,
+    Extension(claims): Extension<Claims>,
     Path(id): Path<i32>,
     Json(payload): Json<UpdateCityRequest>,
 ) -> Result<Json<CityResponse>, (StatusCode, String)> {
+    authorize(&*state.db, &claims, "city:update", None, None).await?;
+
     let city = cities::Entity::find_by_id(id)
         .one(&*state.db)
         .await
@@ -108,8 +121,11 @@ pub async fn update_city(
 // DELETE /api/v1/cities/{id}
 pub async fn delete_city(
     State(state): State<AppState>,
+    Extension(claims): Extension<Claims>,
     Path(id): Path<i32>,
 ) -> Result<StatusCode, (StatusCode, String)> {
+    authorize(&*state.db, &claims, "city:delete", None, None).await?;
+
     let city = cities::Entity::find_by_id(id)
         .one(&*state.db)
         .await

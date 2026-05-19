@@ -1,13 +1,14 @@
 use axum::{
-    extract::{Path, State},
+    extract::{Path, State, Extension},
     http::StatusCode,
     Json,
 };
-use sea_orm::{ActiveModelTrait, ActiveValue, EntityTrait};
+use sea_orm::{ActiveModelTrait, ActiveValue, ColumnTrait, EntityTrait, QueryFilter};
 use chrono::{NaiveDate, Utc};
 
 use crate::{
     AppState,
+    auth::{utils::Claims, permissions::authorize, permissions::get_data_scope},
     entities::students::{self, ActiveModel},
     students::dto::{CreateStudentRequest, StudentResponse, UpdateStudentRequest},
 };
@@ -31,8 +32,11 @@ fn to_response(student: students::Model) -> StudentResponse {
 // POST /api/v1/students
 pub async fn create_student(
     State(state): State<AppState>,
+    Extension(claims): Extension<Claims>,
     Json(payload): Json<CreateStudentRequest>,
 ) -> Result<Json<StudentResponse>, (StatusCode, String)> {
+    authorize(&*state.db, &claims, "student:create", Some(payload.organization_id), Some(payload.branch_id)).await?;
+
     let date_of_birth = NaiveDate::parse_from_str(&payload.date_of_birth, "%Y-%m-%d")
         .map_err(|e| (StatusCode::BAD_REQUEST, format!("Invalid date_of_birth: {}", e)))?;
 
@@ -66,8 +70,21 @@ pub async fn create_student(
 // GET /api/v1/students
 pub async fn get_students(
     State(state): State<AppState>,
+    Extension(claims): Extension<Claims>,
 ) -> Result<Json<Vec<StudentResponse>>, (StatusCode, String)> {
-    let students = students::Entity::find()
+    authorize(&*state.db, &claims, "student:read", None, None).await?;
+
+    let scope = get_data_scope(&claims);
+    let mut query = students::Entity::find();
+
+    if let Some(org_id) = scope.organization_id {
+        query = query.filter(students::Column::OrganizationId.eq(org_id));
+    }
+    if let Some(branch_id) = scope.branch_id {
+        query = query.filter(students::Column::BranchId.eq(branch_id));
+    }
+
+    let students = query
         .all(&*state.db)
         .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
@@ -78,6 +95,7 @@ pub async fn get_students(
 // GET /api/v1/students/{id}
 pub async fn get_student(
     State(state): State<AppState>,
+    Extension(claims): Extension<Claims>,
     Path(id): Path<i32>,
 ) -> Result<Json<StudentResponse>, (StatusCode, String)> {
     let student = students::Entity::find_by_id(id)
@@ -86,12 +104,15 @@ pub async fn get_student(
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
         .ok_or((StatusCode::NOT_FOUND, "Student not found".to_string()))?;
 
+    authorize(&*state.db, &claims, "student:read", Some(student.organization_id), Some(student.branch_id)).await?;
+
     Ok(Json(to_response(student)))
 }
 
 // PUT /api/v1/students/{id}
 pub async fn update_student(
     State(state): State<AppState>,
+    Extension(claims): Extension<Claims>,
     Path(id): Path<i32>,
     Json(payload): Json<UpdateStudentRequest>,
 ) -> Result<Json<StudentResponse>, (StatusCode, String)> {
@@ -100,6 +121,8 @@ pub async fn update_student(
         .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
         .ok_or((StatusCode::NOT_FOUND, "Student not found".to_string()))?;
+
+    authorize(&*state.db, &claims, "student:update", Some(student.organization_id), Some(student.branch_id)).await?;
 
     let mut active_model: ActiveModel = student.into();
 
@@ -129,6 +152,7 @@ pub async fn update_student(
 // DELETE /api/v1/students/{id}
 pub async fn delete_student(
     State(state): State<AppState>,
+    Extension(claims): Extension<Claims>,
     Path(id): Path<i32>,
 ) -> Result<StatusCode, (StatusCode, String)> {
     let student = students::Entity::find_by_id(id)
@@ -136,6 +160,8 @@ pub async fn delete_student(
         .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
         .ok_or((StatusCode::NOT_FOUND, "Student not found".to_string()))?;
+
+    authorize(&*state.db, &claims, "student:delete", Some(student.organization_id), Some(student.branch_id)).await?;
 
     let active_model: ActiveModel = student.into();
 
