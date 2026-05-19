@@ -14,6 +14,7 @@ mod cities;
 mod organizations;
 mod branches;
 mod streams;
+mod class_levels;
 
 #[derive(Clone)]
 pub struct AppState {
@@ -75,6 +76,12 @@ async fn main() {
         .route("/api/v1/streams/{id}", get(streams::handlers::get_stream))
         .route("/api/v1/streams/{id}", put(streams::handlers::update_stream))
         .route("/api/v1/streams/{id}", delete(streams::handlers::delete_stream))
+        // Class level routes
+        .route("/api/v1/class-levels", post(class_levels::handlers::create_class_level))
+        .route("/api/v1/class-levels", get(class_levels::handlers::get_class_levels))
+        .route("/api/v1/class-levels/{id}", get(class_levels::handlers::get_class_level))
+        .route("/api/v1/class-levels/{id}", put(class_levels::handlers::update_class_level))
+        .route("/api/v1/class-levels/{id}", delete(class_levels::handlers::delete_class_level))
 
         
         .layer(middleware::from_fn_with_state(
