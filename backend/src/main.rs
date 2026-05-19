@@ -16,6 +16,7 @@ mod branches;
 mod streams;
 mod class_levels;
 mod master_classes;
+mod master_sections;
 
 #[derive(Clone)]
 pub struct AppState {
@@ -89,7 +90,12 @@ async fn main() {
         .route("/api/v1/master-classes/{id}", get(master_classes::handlers::get_master_class))
         .route("/api/v1/master-classes/{id}", put(master_classes::handlers::update_master_class))
         .route("/api/v1/master-classes/{id}", delete(master_classes::handlers::delete_master_class))
-
+        // Master section routes
+        .route("/api/v1/master-sections", post(master_sections::handlers::create_master_section))
+        .route("/api/v1/master-sections", get(master_sections::handlers::get_master_sections))
+        .route("/api/v1/master-sections/{id}", get(master_sections::handlers::get_master_section))
+        .route("/api/v1/master-sections/{id}", put(master_sections::handlers::update_master_section))
+        .route("/api/v1/master-sections/{id}", delete(master_sections::handlers::delete_master_section))
         
         .layer(middleware::from_fn_with_state(
             state.clone(),
