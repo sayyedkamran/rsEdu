@@ -36,6 +36,19 @@ mod scholarships;
 mod exams;
 mod exam_subjects;
 mod transfers;
+mod allowance_deduction_types;
+mod salary_structures;
+mod salary_structure_components;
+mod staff_salaries;
+mod staff_salary_allowances;
+mod staff_monthly_salaries;
+mod staff_monthly_salary_details;
+mod salary_increments;
+mod salary_payments;
+mod leave_types;
+mod staff_leaves;
+mod staff_loans;
+mod staff_loan_deductions;
 
 #[derive(Clone)]
 pub struct AppState {
@@ -229,6 +242,84 @@ async fn main() {
         .route("/api/v1/transfers/{id}", get(transfers::handlers::get_transfer))
         .route("/api/v1/transfers/{id}", put(transfers::handlers::update_transfer))
         .route("/api/v1/transfers/{id}", delete(transfers::handlers::delete_transfer))
+        // Allowance/deduction type routes
+        .route("/api/v1/allowance-deduction-types", post(allowance_deduction_types::handlers::create_allowance_deduction_type))
+        .route("/api/v1/allowance-deduction-types", get(allowance_deduction_types::handlers::get_allowance_deduction_types))
+        .route("/api/v1/allowance-deduction-types/{id}", get(allowance_deduction_types::handlers::get_allowance_deduction_type))
+        .route("/api/v1/allowance-deduction-types/{id}", put(allowance_deduction_types::handlers::update_allowance_deduction_type))
+        .route("/api/v1/allowance-deduction-types/{id}", delete(allowance_deduction_types::handlers::delete_allowance_deduction_type))
+        // Salary structure routes
+        .route("/api/v1/salary-structures", post(salary_structures::handlers::create_salary_structure))
+        .route("/api/v1/salary-structures", get(salary_structures::handlers::get_salary_structures))
+        .route("/api/v1/salary-structures/{id}", get(salary_structures::handlers::get_salary_structure))
+        .route("/api/v1/salary-structures/{id}", put(salary_structures::handlers::update_salary_structure))
+        .route("/api/v1/salary-structures/{id}", delete(salary_structures::handlers::delete_salary_structure))
+        // Salary structure component routes
+        .route("/api/v1/salary-structure-components", post(salary_structure_components::handlers::create_salary_structure_component))
+        .route("/api/v1/salary-structure-components", get(salary_structure_components::handlers::get_salary_structure_components))
+        .route("/api/v1/salary-structure-components/{id}", get(salary_structure_components::handlers::get_salary_structure_component))
+        .route("/api/v1/salary-structure-components/{id}", put(salary_structure_components::handlers::update_salary_structure_component))
+        .route("/api/v1/salary-structure-components/{id}", delete(salary_structure_components::handlers::delete_salary_structure_component))
+        // Staff salary routes
+        .route("/api/v1/staff-salaries", post(staff_salaries::handlers::create_staff_salary))
+        .route("/api/v1/staff-salaries", get(staff_salaries::handlers::get_staff_salaries))
+        .route("/api/v1/staff-salaries/{id}", get(staff_salaries::handlers::get_staff_salary))
+        .route("/api/v1/staff-salaries/{id}", put(staff_salaries::handlers::update_staff_salary))
+        .route("/api/v1/staff-salaries/{id}", delete(staff_salaries::handlers::delete_staff_salary))
+        // Staff salary allowance routes
+        .route("/api/v1/staff-salary-allowances", post(staff_salary_allowances::handlers::create_staff_salary_allowance))
+        .route("/api/v1/staff-salary-allowances", get(staff_salary_allowances::handlers::get_staff_salary_allowances))
+        .route("/api/v1/staff-salary-allowances/{id}", get(staff_salary_allowances::handlers::get_staff_salary_allowance))
+        .route("/api/v1/staff-salary-allowances/{id}", put(staff_salary_allowances::handlers::update_staff_salary_allowance))
+        .route("/api/v1/staff-salary-allowances/{id}", delete(staff_salary_allowances::handlers::delete_staff_salary_allowance))
+        // Staff monthly salary routes
+        .route("/api/v1/staff-monthly-salaries", post(staff_monthly_salaries::handlers::create_staff_monthly_salary))
+        .route("/api/v1/staff-monthly-salaries", get(staff_monthly_salaries::handlers::get_staff_monthly_salaries))
+        .route("/api/v1/staff-monthly-salaries/{id}", get(staff_monthly_salaries::handlers::get_staff_monthly_salary))
+        .route("/api/v1/staff-monthly-salaries/{id}", put(staff_monthly_salaries::handlers::update_staff_monthly_salary))
+        .route("/api/v1/staff-monthly-salaries/{id}", delete(staff_monthly_salaries::handlers::delete_staff_monthly_salary))
+        // Staff monthly salary detail routes
+        .route("/api/v1/staff-monthly-salary-details", post(staff_monthly_salary_details::handlers::create_staff_monthly_salary_detail))
+        .route("/api/v1/staff-monthly-salary-details", get(staff_monthly_salary_details::handlers::get_staff_monthly_salary_details))
+        .route("/api/v1/staff-monthly-salary-details/{id}", get(staff_monthly_salary_details::handlers::get_staff_monthly_salary_detail))
+        .route("/api/v1/staff-monthly-salary-details/{id}", put(staff_monthly_salary_details::handlers::update_staff_monthly_salary_detail))
+        .route("/api/v1/staff-monthly-salary-details/{id}", delete(staff_monthly_salary_details::handlers::delete_staff_monthly_salary_detail))
+        // Salary increment routes
+        .route("/api/v1/salary-increments", post(salary_increments::handlers::create_salary_increment))
+        .route("/api/v1/salary-increments", get(salary_increments::handlers::get_salary_increments))
+        .route("/api/v1/salary-increments/{id}", get(salary_increments::handlers::get_salary_increment))
+        .route("/api/v1/salary-increments/{id}", put(salary_increments::handlers::update_salary_increment))
+        .route("/api/v1/salary-increments/{id}", delete(salary_increments::handlers::delete_salary_increment))
+        // Salary payment routes
+        .route("/api/v1/salary-payments", post(salary_payments::handlers::create_salary_payment))
+        .route("/api/v1/salary-payments", get(salary_payments::handlers::get_salary_payments))
+        .route("/api/v1/salary-payments/{id}", get(salary_payments::handlers::get_salary_payment))
+        .route("/api/v1/salary-payments/{id}", put(salary_payments::handlers::update_salary_payment))
+        .route("/api/v1/salary-payments/{id}", delete(salary_payments::handlers::delete_salary_payment))
+        // Leave type routes
+        .route("/api/v1/leave-types", post(leave_types::handlers::create_leave_type))
+        .route("/api/v1/leave-types", get(leave_types::handlers::get_leave_types))
+        .route("/api/v1/leave-types/{id}", get(leave_types::handlers::get_leave_type))
+        .route("/api/v1/leave-types/{id}", put(leave_types::handlers::update_leave_type))
+        .route("/api/v1/leave-types/{id}", delete(leave_types::handlers::delete_leave_type))
+        // Staff leave routes
+        .route("/api/v1/staff-leaves", post(staff_leaves::handlers::create_staff_leave))
+        .route("/api/v1/staff-leaves", get(staff_leaves::handlers::get_staff_leaves))
+        .route("/api/v1/staff-leaves/{id}", get(staff_leaves::handlers::get_staff_leave))
+        .route("/api/v1/staff-leaves/{id}", put(staff_leaves::handlers::update_staff_leave))
+        .route("/api/v1/staff-leaves/{id}", delete(staff_leaves::handlers::delete_staff_leave))
+        // Staff loan routes
+        .route("/api/v1/staff-loans", post(staff_loans::handlers::create_staff_loan))
+        .route("/api/v1/staff-loans", get(staff_loans::handlers::get_staff_loans))
+        .route("/api/v1/staff-loans/{id}", get(staff_loans::handlers::get_staff_loan))
+        .route("/api/v1/staff-loans/{id}", put(staff_loans::handlers::update_staff_loan))
+        .route("/api/v1/staff-loans/{id}", delete(staff_loans::handlers::delete_staff_loan))
+        // Staff loan deduction routes
+        .route("/api/v1/staff-loan-deductions", post(staff_loan_deductions::handlers::create_staff_loan_deduction))
+        .route("/api/v1/staff-loan-deductions", get(staff_loan_deductions::handlers::get_staff_loan_deductions))
+        .route("/api/v1/staff-loan-deductions/{id}", get(staff_loan_deductions::handlers::get_staff_loan_deduction))
+        .route("/api/v1/staff-loan-deductions/{id}", put(staff_loan_deductions::handlers::update_staff_loan_deduction))
+        .route("/api/v1/staff-loan-deductions/{id}", delete(staff_loan_deductions::handlers::delete_staff_loan_deduction))
 
         .layer(middleware::from_fn_with_state(
             state.clone(),

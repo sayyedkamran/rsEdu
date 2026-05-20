@@ -23,6 +23,8 @@ pub struct Model {
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
+    #[sea_orm(has_many = "super::allowance_deduction_types::Entity")]
+    AllowanceDeductionTypes,
     #[sea_orm(has_many = "super::attendance::Entity")]
     Attendance,
     #[sea_orm(has_many = "super::audit_logs::Entity")]
@@ -61,14 +63,28 @@ pub enum Relation {
     Permissions,
     #[sea_orm(has_many = "super::roles::Entity")]
     Roles,
+    #[sea_orm(has_many = "super::salary_structures::Entity")]
+    SalaryStructures,
     #[sea_orm(has_many = "super::staff::Entity")]
     Staff,
+    #[sea_orm(has_many = "super::staff_leaves::Entity")]
+    StaffLeaves,
+    #[sea_orm(has_many = "super::staff_loans::Entity")]
+    StaffLoans,
+    #[sea_orm(has_many = "super::staff_monthly_salaries::Entity")]
+    StaffMonthlySalaries,
     #[sea_orm(has_many = "super::students::Entity")]
     Students,
     #[sea_orm(has_many = "super::user_roles::Entity")]
     UserRoles,
     #[sea_orm(has_many = "super::users::Entity")]
     Users,
+}
+
+impl Related<super::allowance_deduction_types::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::AllowanceDeductionTypes.def()
+    }
 }
 
 impl Related<super::attendance::Entity> for Entity {
@@ -149,9 +165,33 @@ impl Related<super::roles::Entity> for Entity {
     }
 }
 
+impl Related<super::salary_structures::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::SalaryStructures.def()
+    }
+}
+
 impl Related<super::staff::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Staff.def()
+    }
+}
+
+impl Related<super::staff_leaves::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::StaffLeaves.def()
+    }
+}
+
+impl Related<super::staff_loans::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::StaffLoans.def()
+    }
+}
+
+impl Related<super::staff_monthly_salaries::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::StaffMonthlySalaries.def()
     }
 }
 

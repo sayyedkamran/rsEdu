@@ -1,0 +1,2392 @@
+╭─── Claude Code v2.1.144 ─────────────────────────────────────────────────────╮
+│                                                    │ Tips for getting        │
+│                Welcome back Sayyed!                │ started                 │
+│                                                    │ Run /init to create a … │
+│                       ▐▛███▜▌                      │ ─────────────────────── │
+│                      ▝▜█████▛▘                     │ What's new              │
+│                        ▘▘ ▝▝                       │ Added `/resume` suppor… │
+│ Sonnet 4.6 · Claude Pro · sayyedkamran@gmail.com's │ Added elapsed duration… │
+│  Organization                                      │ The `/plugin` browse a… │
+│                  ~/rsEdu/backend                   │ /release-notes for more │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+❯ Absolutely — you understand the pattern completely. Let's hand it all to      
+  Claude Code.                                                                  
+                                                                                
+  Open Claude Code:                                                             
+                                                                                
+  ```bash                                                                       
+  claude                                                                        
+  ```                                                                           
+                                                                                
+  Then paste this prompt:                                                       
+                                                                                
+  ```                                                                           
+  We need to add a complete salary management system to rsEdu.                  
+                                                                                
+  STEP 1 - Create migrations in backend/migration/src/ using sea-orm-cli:       
+  Run these commands in order:                                                  
+  sea-orm-cli migrate generate create_allowance_deduction_types_table -d        
+  /home/sayyed/rsEdu/backend/migration                                          
+  sea-orm-cli migrate generate create_salary_structures_table -d                
+  /home/sayyed/rsEdu/backend/migration                                          
+  sea-orm-cli migrate generate create_salary_structure_components_table -d      
+  /home/sayyed/rsEdu/backend/migration                                          
+  sea-orm-cli migrate generate create_staff_salaries_table -d                   
+  /home/sayyed/rsEdu/backend/migration                                          
+  sea-orm-cli migrate generate create_staff_salary_allowances_table -d          
+  /home/sayyed/rsEdu/backend/migration                                          
+  sea-orm-cli migrate generate create_staff_monthly_salaries_table -d           
+  /home/sayyed/rsEdu/backend/migration                                          
+  sea-orm-cli migrate generate create_staff_monthly_salary_details_table -d     
+  /home/sayyed/rsEdu/backend/migration                                          
+  sea-orm-cli migrate generate create_salary_increments_table -d                
+  /home/sayyed/rsEdu/backend/migration                                          
+  sea-orm-cli migrate generate create_salary_payments_table -d                  
+  /home/sayyed/rsEdu/backend/migration                                          
+  sea-orm-cli migrate generate create_leave_types_table -d                      
+  /home/sayyed/rsEdu/backend/migration                                          
+  sea-orm-cli migrate generate create_staff_leaves_table -d                     
+  /home/sayyed/rsEdu/backend/migration                                          
+  sea-orm-cli migrate generate create_staff_loans_table -d                      
+  /home/sayyed/rsEdu/backend/migration                                          
+  sea-orm-cli migrate generate create_staff_loan_deductions_table -d            
+  /home/sayyed/rsEdu/backend/migration                                          
+                                                                                
+  STEP 2 - Write migration content for each file:                               
+                                                                                
+  allowance_deduction_types:                                                    
+  - organization_id (integer, fk to organizations, restrict)                    
+  - branch_id (integer_null, fk to branches, restrict)                          
+  - name (string)                                                               
+  - name_urdu (string_null)                                                     
+  - type (string) - "allowance" or "deduction"                                  
+  - occurrence (string) - "one_time" or "recurring"                             
+  - frequency (string_null) - "monthly/quarterly/biannual/annual"               
+  - is_taxable (boolean)                                                        
+  - description (string_null)                                                   
+  - is_active (boolean)                                                         
+  - created_at, updated_at (timestamp_with_time_zone)                           
+                                                                                
+  salary_structures:                                                            
+  - organization_id (integer, fk to organizations, restrict)                    
+  - branch_id (integer_null, fk to branches, restrict)                          
+  - name (string)                                                               
+  - name_urdu (string_null)                                                     
+  - description (string_null)                                                   
+  - is_active (boolean)                                                         
+  - created_at, updated_at                                                      
+                                                                                
+  salary_structure_components:                                                  
+  - salary_structure_id (integer, fk to salary_structures, cascade)             
+  - allowance_deduction_type_id (integer, fk to allowance_deduction_types,      
+  restrict)                                                                     
+  - amount (integer)                                                            
+  - calculation_type (string) - "fixed" or "percentage"                         
+  - percentage_base (string_null) - "basic_salary" or "gross_salary"            
+  - is_active (boolean)                                                         
+  - created_at, updated_at                                                      
+                                                                                
+  staff_salaries:                                                               
+  - staff_id (integer, fk to staff, restrict)                                   
+  - salary_structure_id (integer, fk to salary_structures, restrict)            
+  - basic_salary (integer)                                                      
+  - effective_from (date)                                                       
+  - effective_to (date_null)                                                    
+  - remarks (string_null)                                                       
+  - assigned_by (integer, fk to users, restrict)                                
+  - is_active (boolean)                                                         
+  - created_at, updated_at                                                      
+                                                                                
+  staff_salary_allowances:                                                      
+  - staff_salary_id (integer, fk to staff_salaries, cascade)                    
+  - allowance_deduction_type_id (integer, fk to allowance_deduction_types,      
+  restrict)                                                                     
+  - amount (integer)                                                            
+  - calculation_type (string)                                                   
+  - is_active (boolean)                                                         
+  - created_at, updated_at                                                      
+                                                                                
+  staff_monthly_salaries:                                                       
+  - staff_id (integer, fk to staff, restrict)                                   
+  - branch_id (integer, fk to branches, restrict)                               
+  - academic_year_id (integer, fk to academic_years, restrict)                  
+  - salary_month (integer)                                                      
+  - salary_year (integer)                                                       
+  - working_days (integer)                                                      
+  - present_days (integer)                                                      
+  - absent_days (integer)                                                       
+  - gross_salary (integer)                                                      
+  - total_deductions (integer)                                                  
+  - net_salary (integer)                                                        
+  - status (string) - "draft/approved/paid"                                     
+  - approved_by (integer_null, fk to users, restrict)                           
+  - approved_at (timestamp_with_time_zone_null)                                 
+  - payment_date (date_null)                                                    
+  - payment_method_id (integer_null, fk to payment_methods, restrict)           
+  - remarks (string_null)                                                       
+  - generated_by (integer, fk to users, restrict)                               
+  - created_at, updated_at                                                      
+                                                                                
+  staff_monthly_salary_details:                                                 
+  - staff_monthly_salary_id (integer, fk to staff_monthly_salaries, cascade)    
+  - allowance_deduction_type_id (integer_null, fk to allowance_deduction_types, 
+   restrict)                                                                    
+  - description (string)                                                        
+  - type (string) - "allowance" or "deduction"                                  
+  - amount (integer)                                                            
+  - is_adhoc (boolean)                                                          
+  - remarks (string_null)                                                       
+  - created_at                                                                  
+                                                                                
+  salary_increments:                                                            
+  - staff_id (integer, fk to staff, restrict)                                   
+  - staff_salary_id (integer, fk to staff_salaries, restrict)                   
+  - increment_type (string) - "annual/promotion/performance/adhoc"              
+  - previous_basic_salary (integer)                                             
+  - new_basic_salary (integer)                                                  
+  - increment_amount (integer)                                                  
+  - effective_from (date)                                                       
+  - reason (string_null)                                                        
+  - approved_by (integer, fk to users, restrict)                                
+  - created_at                                                                  
+                                                                                
+  salary_payments:                                                              
+  - staff_monthly_salary_id (integer, fk to staff_monthly_salaries, restrict)   
+  - staff_id (integer, fk to staff, restrict)                                   
+  - amount_paid (integer)                                                       
+  - payment_method_id (integer, fk to payment_methods, restrict)                
+  - reference_number (string_null)                                              
+  - payment_date (date)                                                         
+  - receipt_number (string_uniq)                                                
+  - remarks (string_null)                                                       
+  - paid_by (integer, fk to users, restrict)                                    
+  - created_at, updated_at                                                      
+                                                                                
+  leave_types:                                                                  
+  - organization_id (integer, fk to organizations, restrict)                    
+  - name (string)                                                               
+  - name_urdu (string_null)                                                     
+  - max_days_per_year (integer)                                                 
+  - is_paid (boolean)                                                           
+  - is_active (boolean)                                                         
+  - created_at, updated_at                                                      
+                                                                                
+  staff_leaves:                                                                 
+  - staff_id (integer, fk to staff, restrict)                                   
+  - branch_id (integer, fk to branches, restrict)                               
+  - leave_type_id (integer, fk to leave_types, restrict)                        
+  - start_date (date)                                                           
+  - end_date (date)                                                             
+  - days (integer)                                                              
+  - reason (string_null)                                                        
+  - status (string) - "pending/approved/rejected"                               
+  - approved_by (integer_null, fk to users, restrict)                           
+  - rejection_reason (string_null)                                              
+  - created_at, updated_at                                                      
+                                                                                
+  staff_loans:                                                                  
+  - staff_id (integer, fk to staff, restrict)                                   
+  - branch_id (integer, fk to branches, restrict)                               
+  - amount (integer)                                                            
+  - purpose (string_null)                                                       
+  - installments (integer)                                                      
+  - installment_amount (integer)                                                
+  - start_month (integer)                                                       
+  - start_year (integer)                                                        
+  - status (string) - "active/completed/written_off"                            
+  - approved_by (integer, fk to users, restrict)                                
+  - created_at, updated_at                                                      
+                                                                                
+  staff_loan_deductions:                                                        
+  - staff_loan_id (integer, fk to staff_loans, cascade)                         
+  - staff_monthly_salary_id (integer, fk to staff_monthly_salaries, restrict)   
+  - amount_deducted (integer)                                                   
+  - created_at                                                                  
+                                                                                
+  STEP 3 - Apply migrations:                                                    
+  cd /home/sayyed/rsEdu && sea-orm-cli migrate up --database-url                
+  postgres://rsedu:rsedu_password@localhost:5432/rsedu -d backend/migration     
+                                                                                
+  STEP 4 - Generate entities:                                                   
+  sea-orm-cli generate entity -u                                                
+  postgres://rsedu:rsedu_password@localhost:5432/rsedu -o                       
+  /home/sayyed/rsEdu/backend/src/entities                                       
+                                                                                
+  STEP 5 - Generate CRUD modules following the exact same pattern as existing   
+  modules (provinces, branches, staff etc):                                     
+  - allowance_deduction_types                                                   
+  - salary_structures                                                           
+  - salary_structure_components                                                 
+  - staff_salaries                                                              
+  - staff_salary_allowances                                                     
+  - staff_monthly_salaries                                                      
+  - staff_monthly_salary_details                                                
+  - salary_increments                                                           
+  - salary_payments                                                             
+  - leave_types                                                                 
+  - staff_leaves                                                                
+  - staff_loans                                                                 
+  - staff_loan_deductions                                                       
+                                                                                
+  STEP 6 - Update main.rs with all new module declarations and routes.          
+                                                                                
+  STEP 7 - Run cargo check to verify everything compiles.                       
+  ```                                                                           
+                                                                                
+  Tell me when Claude Code finishes.                                            
+
+● I'll implement the full salary management system. Let me first explore the
+  existing codebase to understand the patterns before building everything.
+
+  Read 1 file, listed 3 directories (ctrl+o to expand)
+
+● Let me read existing migration and CRUD module patterns.
+
+  Read 7 files, listed 1 directory (ctrl+o to expand)
+
+● I have a clear picture of the patterns. Let me now execute all 7 steps.
+  Starting with the migrations.
+
+● Bash(\
+      sea-orm-cli migrate generate create_allowance_deduction_types_table -d
+      backend/migration 2>&1 && \…)
+  ⎿  Generating new migration...
+     Creating migration file `backend/migration/src/m20260520_150443_create
+     _allowance_deduction_types_table.rs`
+     … +40 lines (ctrl+o to expand)
+
+● All 13 migration files generated. Now writing the migration content for each.
+
+● Write(migration/src/m20260520_150443_create_allowance_deduction_types_table.rs
+       )
+  ⎿  Error writing file
+
+  Read 1 file (ctrl+o to expand)
+
+● I need to read all migration files first. Let me do that in parallel.
+
+  Read 12 files (ctrl+o to expand)
+
+● Good, all files have the same boilerplate. Now I'll write all 13 migration
+  files in parallel.
+
+● Write(migration/src/m20260520_150443_create_allowance_deduction_types_table.rs
+       )
+  ⎿  Added 42 lines, removed 14 lines
+       6  #[async_trait::async_trait]
+       7  impl MigrationTrait for Migration {
+       8      async fn up(&self, manager: &SchemaManager) -> Result<(), D
+          bErr> {
+       9 -        // Replace the sample below with your own migration scr
+         -ipts                                                           
+      10 -        todo!();                                               
+      11 -                                                               
+       9          manager
+      10              .create_table(
+      11                  Table::create()
+      15 -                    .table(Post::Table)                        
+      12 +                    .table(AllowanceDeductionTypes::Table)     
+      13                      .if_not_exists()
+      17 -                    .col(pk_auto(Post::Id))                    
+      18 -                    .col(string(Post::Title))                  
+      19 -                    .col(string(Post::Text))                   
+      14 +                    .col(pk_auto(AllowanceDeductionTypes::Id)) 
+      15 +                    .col(integer(AllowanceDeductionTypes::Organ
+         +izationId))                                                    
+      16 +                    .col(integer_null(AllowanceDeductionTypes::
+         +BranchId))                                                     
+      17 +                    .col(string(AllowanceDeductionTypes::Name))
+      18 +                    .col(string_null(AllowanceDeductionTypes::N
+         +ameUrdu))                                                      
+      19 +                    .col(string(AllowanceDeductionTypes::Type))
+      20 +                    .col(string(AllowanceDeductionTypes::Occurr
+         +ence))                                                         
+      21 +                    .col(string_null(AllowanceDeductionTypes::F
+         +requency))                                                     
+      22 +                    .col(boolean(AllowanceDeductionTypes::IsTax
+         +able))                                                         
+      23 +                    .col(string_null(AllowanceDeductionTypes::D
+         +escription))                                                   
+      24 +                    .col(boolean(AllowanceDeductionTypes::IsAct
+         +ive))                                                          
+      25 +                    .col(timestamp_with_time_zone(AllowanceDedu
+         +ctionTypes::CreatedAt))                                        
+      26 +                    .col(timestamp_with_time_zone(AllowanceDedu
+         +ctionTypes::UpdatedAt))                                        
+      27 +                    .foreign_key(                              
+      28 +                        ForeignKey::create()                   
+      29 +                            .name("fk_adt_organization_id")    
+      30 +                            .from(AllowanceDeductionTypes::Tabl
+         +e, AllowanceDeductionTypes::OrganizationId)                    
+      31 +                            .to(Alias::new("organizations"), Al
+         +ias::new("id"))                                                
+      32 +                            .on_delete(ForeignKeyAction::Restri
+         +ct),                                                           
+      33 +                    )                                          
+      34 +                    .foreign_key(                              
+      35 +                        ForeignKey::create()                   
+      36 +                            .name("fk_adt_branch_id")          
+      37 +                            .from(AllowanceDeductionTypes::Tabl
+         +e, AllowanceDeductionTypes::BranchId)                          
+      38 +                            .to(Alias::new("branches"), Alias::
+         +new("id"))                                                     
+      39 +                            .on_delete(ForeignKeyAction::Restri
+         +ct),                                                           
+      40 +                    )                                          
+      41                      .to_owned(),
+      42              )
+      43              .await
+      44      }
+      45  
+      46      async fn down(&self, manager: &SchemaManager) -> Result<(),
+           DbErr> {
+      26 -        // Replace the sample below with your own migration scr
+         -ipts                                                           
+      27 -        todo!();                                               
+      28 -                                                               
+      47          manager
+      30 -            .drop_table(Table::drop().table(Post::Table).to_own
+         -ed())                                                          
+      48 +            .drop_table(Table::drop().table(AllowanceDeductionT
+         +ypes::Table).to_owned())                                       
+      49              .await
+      50      }
+      51  }
+      52  
+      53  #[derive(DeriveIden)]
+      36 -enum Post {                                                    
+      54 +enum AllowanceDeductionTypes {                                 
+      55      Table,
+      56      Id,
+      39 -    Title,                                                     
+      40 -    Text,                                                      
+      57 +    OrganizationId,                                            
+      58 +    BranchId,                                                  
+      59 +    Name,                                                      
+      60 +    NameUrdu,                                                  
+      61 +    Type,                                                      
+      62 +    Occurrence,                                                
+      63 +    Frequency,                                                 
+      64 +    IsTaxable,                                                 
+      65 +    Description,                                               
+      66 +    IsActive,                                                  
+      67 +    CreatedAt,                                                 
+      68 +    UpdatedAt,                                                 
+      69  }
+
+● Write(migration/src/m20260520_150443_create_salary_structures_table.rs)
+  ⎿  Added 34 lines, removed 14 lines
+       6  #[async_trait::async_trait]
+       7  impl MigrationTrait for Migration {
+       8      async fn up(&self, manager: &SchemaManager) -> Result<(), D
+          bErr> {
+       9 -        // Replace the sample below with your own migration scr
+         -ipts                                                           
+      10 -        todo!();                                               
+      11 -                                                               
+       9          manager
+      10              .create_table(
+      11                  Table::create()
+      15 -                    .table(Post::Table)                        
+      12 +                    .table(SalaryStructures::Table)            
+      13                      .if_not_exists()
+      17 -                    .col(pk_auto(Post::Id))                    
+      18 -                    .col(string(Post::Title))                  
+      19 -                    .col(string(Post::Text))                   
+      14 +                    .col(pk_auto(SalaryStructures::Id))        
+      15 +                    .col(integer(SalaryStructures::Organization
+         +Id))                                                           
+      16 +                    .col(integer_null(SalaryStructures::BranchI
+         +d))                                                            
+      17 +                    .col(string(SalaryStructures::Name))       
+      18 +                    .col(string_null(SalaryStructures::NameUrdu
+         +))                                                             
+      19 +                    .col(string_null(SalaryStructures::Descript
+         +ion))                                                          
+      20 +                    .col(boolean(SalaryStructures::IsActive))  
+      21 +                    .col(timestamp_with_time_zone(SalaryStructu
+         +res::CreatedAt))                                               
+      22 +                    .col(timestamp_with_time_zone(SalaryStructu
+         +res::UpdatedAt))                                               
+      23 +                    .foreign_key(                              
+      24 +                        ForeignKey::create()                   
+      25 +                            .name("fk_salary_structures_organiz
+         +ation_id")                                                     
+      26 +                            .from(SalaryStructures::Table, Sala
+         +ryStructures::OrganizationId)                                  
+      27 +                            .to(Alias::new("organizations"), Al
+         +ias::new("id"))                                                
+      28 +                            .on_delete(ForeignKeyAction::Restri
+         +ct),                                                           
+      29 +                    )                                          
+      30 +                    .foreign_key(                              
+      31 +                        ForeignKey::create()                   
+      32 +                            .name("fk_salary_structures_branch_
+         +id")                                                           
+      33 +                            .from(SalaryStructures::Table, Sala
+         +ryStructures::BranchId)                                        
+      34 +                            .to(Alias::new("branches"), Alias::
+         +new("id"))                                                     
+      35 +                            .on_delete(ForeignKeyAction::Restri
+         +ct),                                                           
+      36 +                    )                                          
+      37                      .to_owned(),
+      38              )
+      39              .await
+      40      }
+      41  
+      42      async fn down(&self, manager: &SchemaManager) -> Result<(),
+           DbErr> {
+      26 -        // Replace the sample below with your own migration scr
+         -ipts                                                           
+      27 -        todo!();                                               
+      28 -                                                               
+      43          manager
+      30 -            .drop_table(Table::drop().table(Post::Table).to_own
+         -ed())                                                          
+      44 +            .drop_table(Table::drop().table(SalaryStructures::T
+         +able).to_owned())                                              
+      45              .await
+      46      }
+      47  }
+      48  
+      49  #[derive(DeriveIden)]
+      36 -enum Post {                                                    
+      50 +enum SalaryStructures {                                        
+      51      Table,
+      52      Id,
+      39 -    Title,                                                     
+      40 -    Text,                                                      
+      53 +    OrganizationId,                                            
+      54 +    BranchId,                                                  
+      55 +    Name,                                                      
+      56 +    NameUrdu,                                                  
+      57 +    Description,                                               
+      58 +    IsActive,                                                  
+      59 +    CreatedAt,                                                 
+      60 +    UpdatedAt,                                                 
+      61  }
+
+● Write(migration/src/m20260520_150443_create_salary_structure_components_table.
+       rs)
+  ⎿  Added 34 lines, removed 14 lines
+       6  #[async_trait::async_trait]
+       7  impl MigrationTrait for Migration {
+       8      async fn up(&self, manager: &SchemaManager) -> Result<(), D
+          bErr> {
+       9 -        // Replace the sample below with your own migration scr
+         -ipts                                                           
+      10 -        todo!();                                               
+      11 -                                                               
+       9          manager
+      10              .create_table(
+      11                  Table::create()
+      15 -                    .table(Post::Table)                        
+      12 +                    .table(SalaryStructureComponents::Table)   
+      13                      .if_not_exists()
+      17 -                    .col(pk_auto(Post::Id))                    
+      18 -                    .col(string(Post::Title))                  
+      19 -                    .col(string(Post::Text))                   
+      14 +                    .col(pk_auto(SalaryStructureComponents::Id)
+         +)                                                              
+      15 +                    .col(integer(SalaryStructureComponents::Sal
+         +aryStructureId))                                               
+      16 +                    .col(integer(SalaryStructureComponents::All
+         +owanceDeductionTypeId))                                        
+      17 +                    .col(integer(SalaryStructureComponents::Amo
+         +unt))                                                          
+      18 +                    .col(string(SalaryStructureComponents::Calc
+         +ulationType))                                                  
+      19 +                    .col(string_null(SalaryStructureComponents:
+         +:PercentageBase))                                              
+      20 +                    .col(boolean(SalaryStructureComponents::IsA
+         +ctive))                                                        
+      21 +                    .col(timestamp_with_time_zone(SalaryStructu
+         +reComponents::CreatedAt))                                      
+      22 +                    .col(timestamp_with_time_zone(SalaryStructu
+         +reComponents::UpdatedAt))                                      
+      23 +                    .foreign_key(                              
+      24 +                        ForeignKey::create()                   
+      25 +                            .name("fk_ssc_salary_structure_id")
+      26 +                            .from(SalaryStructureComponents::Ta
+         +ble, SalaryStructureComponents::SalaryStructureId)             
+      27 +                            .to(Alias::new("salary_structures")
+         +, Alias::new("id"))                                            
+      28 +                            .on_delete(ForeignKeyAction::Cascad
+         +e),                                                            
+      29 +                    )                                          
+      30 +                    .foreign_key(                              
+      31 +                        ForeignKey::create()                   
+      32 +                            .name("fk_ssc_allowance_deduction_t
+         +ype_id")                                                       
+      33 +                            .from(SalaryStructureComponents::Ta
+         +ble, SalaryStructureComponents::AllowanceDeductionTypeId)      
+      34 +                            .to(Alias::new("allowance_deduction
+         +_types"), Alias::new("id"))                                    
+      35 +                            .on_delete(ForeignKeyAction::Restri
+         +ct),                                                           
+      36 +                    )                                          
+      37                      .to_owned(),
+      38              )
+      39              .await
+      40      }
+      41  
+      42      async fn down(&self, manager: &SchemaManager) -> Result<(),
+           DbErr> {
+      26 -        // Replace the sample below with your own migration scr
+         -ipts                                                           
+      27 -        todo!();                                               
+      28 -                                                               
+      43          manager
+      30 -            .drop_table(Table::drop().table(Post::Table).to_own
+         -ed())                                                          
+      44 +            .drop_table(Table::drop().table(SalaryStructureComp
+         +onents::Table).to_owned())                                     
+      45              .await
+      46      }
+      47  }
+      48  
+      49  #[derive(DeriveIden)]
+      36 -enum Post {                                                    
+      50 +enum SalaryStructureComponents {                               
+      51      Table,
+      52      Id,
+      39 -    Title,                                                     
+      40 -    Text,                                                      
+      53 +    SalaryStructureId,                                         
+      54 +    AllowanceDeductionTypeId,                                  
+      55 +    Amount,                                                    
+      56 +    CalculationType,                                           
+      57 +    PercentageBase,                                            
+      58 +    IsActive,                                                  
+      59 +    CreatedAt,                                                 
+      60 +    UpdatedAt,                                                 
+      61  }
+
+● Write(migration/src/m20260520_150443_create_staff_salaries_table.rs)
+  ⎿  Added 45 lines, removed 14 lines
+       6  #[async_trait::async_trait]
+       7  impl MigrationTrait for Migration {
+       8      async fn up(&self, manager: &SchemaManager) -> Result<(), D
+          bErr> {
+       9 -        // Replace the sample below with your own migration scr
+         -ipts                                                           
+      10 -        todo!();                                               
+      11 -                                                               
+       9          manager
+      10              .create_table(
+      11                  Table::create()
+      15 -                    .table(Post::Table)                        
+      12 +                    .table(StaffSalaries::Table)               
+      13                      .if_not_exists()
+      17 -                    .col(pk_auto(Post::Id))                    
+      18 -                    .col(string(Post::Title))                  
+      19 -                    .col(string(Post::Text))                   
+      14 +                    .col(pk_auto(StaffSalaries::Id))           
+      15 +                    .col(integer(StaffSalaries::StaffId))      
+      16 +                    .col(integer(StaffSalaries::SalaryStructure
+         +Id))                                                           
+      17 +                    .col(integer(StaffSalaries::BasicSalary))  
+      18 +                    .col(date(StaffSalaries::EffectiveFrom))   
+      19 +                    .col(date_null(StaffSalaries::EffectiveTo))
+      20 +                    .col(string_null(StaffSalaries::Remarks))  
+      21 +                    .col(integer(StaffSalaries::AssignedBy))   
+      22 +                    .col(boolean(StaffSalaries::IsActive))     
+      23 +                    .col(timestamp_with_time_zone(StaffSalaries
+         +::CreatedAt))                                                  
+      24 +                    .col(timestamp_with_time_zone(StaffSalaries
+         +::UpdatedAt))                                                  
+      25 +                    .foreign_key(                              
+      26 +                        ForeignKey::create()                   
+      27 +                            .name("fk_staff_salaries_staff_id")
+      28 +                            .from(StaffSalaries::Table, StaffSa
+         +laries::StaffId)                                               
+      29 +                            .to(Alias::new("staff"), Alias::new
+         +("id"))                                                        
+      30 +                            .on_delete(ForeignKeyAction::Restri
+         +ct),                                                           
+      31 +                    )                                          
+      32 +                    .foreign_key(                              
+      33 +                        ForeignKey::create()                   
+      34 +                            .name("fk_staff_salaries_salary_str
+         +ucture_id")                                                    
+      35 +                            .from(StaffSalaries::Table, StaffSa
+         +laries::SalaryStructureId)                                     
+      36 +                            .to(Alias::new("salary_structures")
+         +, Alias::new("id"))                                            
+      37 +                            .on_delete(ForeignKeyAction::Restri
+         +ct),                                                           
+      38 +                    )                                          
+      39 +                    .foreign_key(                              
+      40 +                        ForeignKey::create()                   
+      41 +                            .name("fk_staff_salaries_assigned_b
+         +y")                                                            
+      42 +                            .from(StaffSalaries::Table, StaffSa
+         +laries::AssignedBy)                                            
+      43 +                            .to(Alias::new("users"), Alias::new
+         +("id"))                                                        
+      44 +                            .on_delete(ForeignKeyAction::Restri
+         +ct),                                                           
+      45 +                    )                                          
+      46                      .to_owned(),
+      47              )
+      48              .await
+      49      }
+      50  
+      51      async fn down(&self, manager: &SchemaManager) -> Result<(),
+           DbErr> {
+      26 -        // Replace the sample below with your own migration scr
+         -ipts                                                           
+      27 -        todo!();                                               
+      28 -                                                               
+      52          manager
+      30 -            .drop_table(Table::drop().table(Post::Table).to_own
+         -ed())                                                          
+      53 +            .drop_table(Table::drop().table(StaffSalaries::Tabl
+         +e).to_owned())                                                 
+      54              .await
+      55      }
+      56  }
+      57  
+      58  #[derive(DeriveIden)]
+      36 -enum Post {                                                    
+      59 +enum StaffSalaries {                                           
+      60      Table,
+      61      Id,
+      39 -    Title,                                                     
+      40 -    Text,                                                      
+      62 +    StaffId,                                                   
+      63 +    SalaryStructureId,                                         
+      64 +    BasicSalary,                                               
+      65 +    EffectiveFrom,                                             
+      66 +    EffectiveTo,                                               
+      67 +    Remarks,                                                   
+      68 +    AssignedBy,                                                
+      69 +    IsActive,                                                  
+      70 +    CreatedAt,                                                 
+      71 +    UpdatedAt,                                                 
+      72  }
+
+● Write(migration/src/m20260520_150443_create_staff_salary_allowances_table.rs)
+  ⎿  Added 32 lines, removed 14 lines
+       6  #[async_trait::async_trait]
+       7  impl MigrationTrait for Migration {
+       8      async fn up(&self, manager: &SchemaManager) -> Result<(), D
+          bErr> {
+       9 -        // Replace the sample below with your own migration scr
+         -ipts                                                           
+      10 -        todo!();                                               
+      11 -                                                               
+       9          manager
+      10              .create_table(
+      11                  Table::create()
+      15 -                    .table(Post::Table)                        
+      12 +                    .table(StaffSalaryAllowances::Table)       
+      13                      .if_not_exists()
+      17 -                    .col(pk_auto(Post::Id))                    
+      18 -                    .col(string(Post::Title))                  
+      19 -                    .col(string(Post::Text))                   
+      14 +                    .col(pk_auto(StaffSalaryAllowances::Id))   
+      15 +                    .col(integer(StaffSalaryAllowances::StaffSa
+         +laryId))                                                       
+      16 +                    .col(integer(StaffSalaryAllowances::Allowan
+         +ceDeductionTypeId))                                            
+      17 +                    .col(integer(StaffSalaryAllowances::Amount)
+         +)                                                              
+      18 +                    .col(string(StaffSalaryAllowances::Calculat
+         +ionType))                                                      
+      19 +                    .col(boolean(StaffSalaryAllowances::IsActiv
+         +e))                                                            
+      20 +                    .col(timestamp_with_time_zone(StaffSalaryAl
+         +lowances::CreatedAt))                                          
+      21 +                    .col(timestamp_with_time_zone(StaffSalaryAl
+         +lowances::UpdatedAt))                                          
+      22 +                    .foreign_key(                              
+      23 +                        ForeignKey::create()                   
+      24 +                            .name("fk_ssa_staff_salary_id")    
+      25 +                            .from(StaffSalaryAllowances::Table,
+         + StaffSalaryAllowances::StaffSalaryId)                         
+      26 +                            .to(Alias::new("staff_salaries"), A
+         +lias::new("id"))                                               
+      27 +                            .on_delete(ForeignKeyAction::Cascad
+         +e),                                                            
+      28 +                    )                                          
+      29 +                    .foreign_key(                              
+      30 +                        ForeignKey::create()                   
+      31 +                            .name("fk_ssa_allowance_deduction_t
+         +ype_id")                                                       
+      32 +                            .from(StaffSalaryAllowances::Table,
+         + StaffSalaryAllowances::AllowanceDeductionTypeId)              
+      33 +                            .to(Alias::new("allowance_deduction
+         +_types"), Alias::new("id"))                                    
+      34 +                            .on_delete(ForeignKeyAction::Restri
+         +ct),                                                           
+      35 +                    )                                          
+      36                      .to_owned(),
+      37              )
+      38              .await
+      39      }
+      40  
+      41      async fn down(&self, manager: &SchemaManager) -> Result<(),
+           DbErr> {
+      26 -        // Replace the sample below with your own migration scr
+         -ipts                                                           
+      27 -        todo!();                                               
+      28 -                                                               
+      42          manager
+      30 -            .drop_table(Table::drop().table(Post::Table).to_own
+         -ed())                                                          
+      43 +            .drop_table(Table::drop().table(StaffSalaryAllowanc
+         +es::Table).to_owned())                                         
+      44              .await
+      45      }
+      46  }
+      47  
+      48  #[derive(DeriveIden)]
+      36 -enum Post {                                                    
+      49 +enum StaffSalaryAllowances {                                   
+      50      Table,
+      51      Id,
+      39 -    Title,                                                     
+      40 -    Text,                                                      
+      52 +    StaffSalaryId,                                             
+      53 +    AllowanceDeductionTypeId,                                  
+      54 +    Amount,                                                    
+      55 +    CalculationType,                                           
+      56 +    IsActive,                                                  
+      57 +    CreatedAt,                                                 
+      58 +    UpdatedAt,                                                 
+      59  }
+
+● Write(migration/src/m20260520_150443_create_staff_monthly_salaries_table.rs)
+  ⎿  Added 86 lines, removed 14 lines
+        6  #[async_trait::async_trait]
+        7  impl MigrationTrait for Migration {
+        8      async fn up(&self, manager: &SchemaManager) -> Result<(), 
+           DbErr> {
+        9 -        // Replace the sample below with your own migration sc
+          -ripts                                                         
+       10 -        todo!();                                              
+       11 -                                                              
+        9          manager
+       10              .create_table(
+       11                  Table::create()
+       15 -                    .table(Post::Table)                       
+       12 +                    .table(StaffMonthlySalaries::Table)       
+       13                      .if_not_exists()
+       17 -                    .col(pk_auto(Post::Id))                   
+       18 -                    .col(string(Post::Title))                 
+       19 -                    .col(string(Post::Text))                  
+       14 +                    .col(pk_auto(StaffMonthlySalaries::Id))   
+       15 +                    .col(integer(StaffMonthlySalaries::StaffId
+          +))                                                            
+       16 +                    .col(integer(StaffMonthlySalaries::BranchI
+          +d))                                                           
+       17 +                    .col(integer(StaffMonthlySalaries::Academi
+          +cYearId))                                                     
+       18 +                    .col(integer(StaffMonthlySalaries::SalaryM
+          +onth))                                                        
+       19 +                    .col(integer(StaffMonthlySalaries::SalaryY
+          +ear))                                                         
+       20 +                    .col(integer(StaffMonthlySalaries::Working
+          +Days))                                                        
+       21 +                    .col(integer(StaffMonthlySalaries::Present
+          +Days))                                                        
+       22 +                    .col(integer(StaffMonthlySalaries::AbsentD
+          +ays))                                                         
+       23 +                    .col(integer(StaffMonthlySalaries::GrossSa
+          +lary))                                                        
+       24 +                    .col(integer(StaffMonthlySalaries::TotalDe
+          +ductions))                                                    
+       25 +                    .col(integer(StaffMonthlySalaries::NetSala
+          +ry))                                                          
+       26 +                    .col(string(StaffMonthlySalaries::Status))
+       27 +                    .col(integer_null(StaffMonthlySalaries::Ap
+          +provedBy))                                                    
+       28 +                    .col(timestamp_with_time_zone_null(StaffMo
+          +nthlySalaries::ApprovedAt))                                   
+       29 +                    .col(date_null(StaffMonthlySalaries::Payme
+          +ntDate))                                                      
+       30 +                    .col(integer_null(StaffMonthlySalaries::Pa
+          +ymentMethodId))                                               
+       31 +                    .col(string_null(StaffMonthlySalaries::Rem
+          +arks))                                                        
+       32 +                    .col(integer(StaffMonthlySalaries::Generat
+          +edBy))                                                        
+       33 +                    .col(timestamp_with_time_zone(StaffMonthly
+          +Salaries::CreatedAt))                                         
+       34 +                    .col(timestamp_with_time_zone(StaffMonthly
+          +Salaries::UpdatedAt))                                         
+       35 +                    .foreign_key(                             
+       36 +                        ForeignKey::create()                  
+       37 +                            .name("fk_sms_staff_id")          
+       38 +                            .from(StaffMonthlySalaries::Table,
+          + StaffMonthlySalaries::StaffId)                               
+       39 +                            .to(Alias::new("staff"), Alias::ne
+          +w("id"))                                                      
+       40 +                            .on_delete(ForeignKeyAction::Restr
+          +ict),                                                         
+       41 +                    )                                         
+       42 +                    .foreign_key(                             
+       43 +                        ForeignKey::create()                  
+       44 +                            .name("fk_sms_branch_id")         
+       45 +                            .from(StaffMonthlySalaries::Table,
+          + StaffMonthlySalaries::BranchId)                              
+       46 +                            .to(Alias::new("branches"), Alias:
+          +:new("id"))                                                   
+       47 +                            .on_delete(ForeignKeyAction::Restr
+          +ict),                                                         
+       48 +                    )                                         
+       49 +                    .foreign_key(                             
+       50 +                        ForeignKey::create()                  
+       51 +                            .name("fk_sms_academic_year_id")  
+       52 +                            .from(StaffMonthlySalaries::Table,
+          + StaffMonthlySalaries::AcademicYearId)                        
+       53 +                            .to(Alias::new("academic_years"), 
+          +Alias::new("id"))                                             
+       54 +                            .on_delete(ForeignKeyAction::Restr
+          +ict),                                                         
+       55 +                    )                                         
+       56 +                    .foreign_key(                             
+       57 +                        ForeignKey::create()                  
+       58 +                            .name("fk_sms_approved_by")       
+       59 +                            .from(StaffMonthlySalaries::Table,
+          + StaffMonthlySalaries::ApprovedBy)                            
+       60 +                            .to(Alias::new("users"), Alias::ne
+          +w("id"))                                                      
+       61 +                            .on_delete(ForeignKeyAction::Restr
+          +ict),                                                         
+       62 +                    )                                         
+       63 +                    .foreign_key(                             
+       64 +                        ForeignKey::create()                  
+       65 +                            .name("fk_sms_payment_method_id") 
+       66 +                            .from(StaffMonthlySalaries::Table,
+          + StaffMonthlySalaries::PaymentMethodId)                       
+       67 +                            .to(Alias::new("payment_methods"),
+          + Alias::new("id"))                                            
+       68 +                            .on_delete(ForeignKeyAction::Restr
+          +ict),                                                         
+       69 +                    )                                         
+       70 +                    .foreign_key(                             
+       71 +                        ForeignKey::create()                  
+       72 +                            .name("fk_sms_generated_by")      
+       73 +                            .from(StaffMonthlySalaries::Table,
+          + StaffMonthlySalaries::GeneratedBy)                           
+       74 +                            .to(Alias::new("users"), Alias::ne
+          +w("id"))                                                      
+       75 +                            .on_delete(ForeignKeyAction::Restr
+          +ict),                                                         
+       76 +                    )                                         
+       77                      .to_owned(),
+       78              )
+       79              .await
+       80      }
+       81  
+       82      async fn down(&self, manager: &SchemaManager) -> Result<()
+           , DbErr> {
+       26 -        // Replace the sample below with your own migration sc
+          -ripts                                                         
+       27 -        todo!();                                              
+       28 -                                                              
+       83          manager
+       30 -            .drop_table(Table::drop().table(Post::Table).to_ow
+          -ned())                                                        
+       84 +            .drop_table(Table::drop().table(StaffMonthlySalari
+          +es::Table).to_owned())                                        
+       85              .await
+       86      }
+       87  }
+       88  
+       89  #[derive(DeriveIden)]
+       36 -enum Post {                                                   
+       90 +enum StaffMonthlySalaries {                                   
+       91      Table,
+       92      Id,
+       39 -    Title,                                                    
+       40 -    Text,                                                     
+       93 +    StaffId,                                                  
+       94 +    BranchId,                                                 
+       95 +    AcademicYearId,                                           
+       96 +    SalaryMonth,                                              
+       97 +    SalaryYear,                                               
+       98 +    WorkingDays,                                              
+       99 +    PresentDays,                                              
+      100 +    AbsentDays,                                               
+      101 +    GrossSalary,                                              
+      102 +    TotalDeductions,                                          
+      103 +    NetSalary,                                                
+      104 +    Status,                                                   
+      105 +    ApprovedBy,                                               
+      106 +    ApprovedAt,                                               
+      107 +    PaymentDate,                                              
+      108 +    PaymentMethodId,                                          
+      109 +    Remarks,                                                  
+      110 +    GeneratedBy,                                              
+      111 +    CreatedAt,                                                
+      112 +    UpdatedAt,                                                
+      113  }
+
+● Write(migration/src/m20260520_150443_create_staff_monthly_salary_details_table
+       .rs)
+  ⎿  Added 34 lines, removed 14 lines
+       6  #[async_trait::async_trait]
+       7  impl MigrationTrait for Migration {
+       8      async fn up(&self, manager: &SchemaManager) -> Result<(), D
+          bErr> {
+       9 -        // Replace the sample below with your own migration scr
+         -ipts                                                           
+      10 -        todo!();                                               
+      11 -                                                               
+       9          manager
+      10              .create_table(
+      11                  Table::create()
+      15 -                    .table(Post::Table)                        
+      12 +                    .table(StaffMonthlySalaryDetails::Table)   
+      13                      .if_not_exists()
+      17 -                    .col(pk_auto(Post::Id))                    
+      18 -                    .col(string(Post::Title))                  
+      19 -                    .col(string(Post::Text))                   
+      14 +                    .col(pk_auto(StaffMonthlySalaryDetails::Id)
+         +)                                                              
+      15 +                    .col(integer(StaffMonthlySalaryDetails::Sta
+         +ffMonthlySalaryId))                                            
+      16 +                    .col(integer_null(StaffMonthlySalaryDetails
+         +::AllowanceDeductionTypeId))                                   
+      17 +                    .col(string(StaffMonthlySalaryDetails::Desc
+         +ription))                                                      
+      18 +                    .col(string(StaffMonthlySalaryDetails::Type
+         +))                                                             
+      19 +                    .col(integer(StaffMonthlySalaryDetails::Amo
+         +unt))                                                          
+      20 +                    .col(boolean(StaffMonthlySalaryDetails::IsA
+         +dhoc))                                                         
+      21 +                    .col(string_null(StaffMonthlySalaryDetails:
+         +:Remarks))                                                     
+      22 +                    .col(timestamp_with_time_zone(StaffMonthlyS
+         +alaryDetails::CreatedAt))                                      
+      23 +                    .foreign_key(                              
+      24 +                        ForeignKey::create()                   
+      25 +                            .name("fk_smsd_staff_monthly_salary
+         +_id")                                                          
+      26 +                            .from(StaffMonthlySalaryDetails::Ta
+         +ble, StaffMonthlySalaryDetails::StaffMonthlySalaryId)          
+      27 +                            .to(Alias::new("staff_monthly_salar
+         +ies"), Alias::new("id"))                                       
+      28 +                            .on_delete(ForeignKeyAction::Cascad
+         +e),                                                            
+      29 +                    )                                          
+      30 +                    .foreign_key(                              
+      31 +                        ForeignKey::create()                   
+      32 +                            .name("fk_smsd_allowance_deduction_
+         +type_id")                                                      
+      33 +                            .from(StaffMonthlySalaryDetails::Ta
+         +ble, StaffMonthlySalaryDetails::AllowanceDeductionTypeId)      
+      34 +                            .to(Alias::new("allowance_deduction
+         +_types"), Alias::new("id"))                                    
+      35 +                            .on_delete(ForeignKeyAction::Restri
+         +ct),                                                           
+      36 +                    )                                          
+      37                      .to_owned(),
+      38              )
+      39              .await
+      40      }
+      41  
+      42      async fn down(&self, manager: &SchemaManager) -> Result<(),
+           DbErr> {
+      26 -        // Replace the sample below with your own migration scr
+         -ipts                                                           
+      27 -        todo!();                                               
+      28 -                                                               
+      43          manager
+      30 -            .drop_table(Table::drop().table(Post::Table).to_own
+         -ed())                                                          
+      44 +            .drop_table(Table::drop().table(StaffMonthlySalaryD
+         +etails::Table).to_owned())                                     
+      45              .await
+      46      }
+      47  }
+      48  
+      49  #[derive(DeriveIden)]
+      36 -enum Post {                                                    
+      50 +enum StaffMonthlySalaryDetails {                               
+      51      Table,
+      52      Id,
+      39 -    Title,                                                     
+      40 -    Text,                                                      
+      53 +    StaffMonthlySalaryId,                                      
+      54 +    AllowanceDeductionTypeId,                                  
+      55 +    Description,                                               
+      56 +    Type,                                                      
+      57 +    Amount,                                                    
+      58 +    IsAdhoc,                                                   
+      59 +    Remarks,                                                   
+      60 +    CreatedAt,                                                 
+      61  }
+
+● Write(migration/src/m20260520_150443_create_salary_increments_table.rs)
+  ⎿  Added 45 lines, removed 14 lines
+       6  #[async_trait::async_trait]
+       7  impl MigrationTrait for Migration {
+       8      async fn up(&self, manager: &SchemaManager) -> Result<(), D
+          bErr> {
+       9 -        // Replace the sample below with your own migration scr
+         -ipts                                                           
+      10 -        todo!();                                               
+      11 -                                                               
+       9          manager
+      10              .create_table(
+      11                  Table::create()
+      15 -                    .table(Post::Table)                        
+      12 +                    .table(SalaryIncrements::Table)            
+      13                      .if_not_exists()
+      17 -                    .col(pk_auto(Post::Id))                    
+      18 -                    .col(string(Post::Title))                  
+      19 -                    .col(string(Post::Text))                   
+      14 +                    .col(pk_auto(SalaryIncrements::Id))        
+      15 +                    .col(integer(SalaryIncrements::StaffId))   
+      16 +                    .col(integer(SalaryIncrements::StaffSalaryI
+         +d))                                                            
+      17 +                    .col(string(SalaryIncrements::IncrementType
+         +))                                                             
+      18 +                    .col(integer(SalaryIncrements::PreviousBasi
+         +cSalary))                                                      
+      19 +                    .col(integer(SalaryIncrements::NewBasicSala
+         +ry))                                                           
+      20 +                    .col(integer(SalaryIncrements::IncrementAmo
+         +unt))                                                          
+      21 +                    .col(date(SalaryIncrements::EffectiveFrom))
+      22 +                    .col(string_null(SalaryIncrements::Reason))
+      23 +                    .col(integer(SalaryIncrements::ApprovedBy))
+      24 +                    .col(timestamp_with_time_zone(SalaryIncreme
+         +nts::CreatedAt))                                               
+      25 +                    .foreign_key(                              
+      26 +                        ForeignKey::create()                   
+      27 +                            .name("fk_salary_increments_staff_i
+         +d")                                                            
+      28 +                            .from(SalaryIncrements::Table, Sala
+         +ryIncrements::StaffId)                                         
+      29 +                            .to(Alias::new("staff"), Alias::new
+         +("id"))                                                        
+      30 +                            .on_delete(ForeignKeyAction::Restri
+         +ct),                                                           
+      31 +                    )                                          
+      32 +                    .foreign_key(                              
+      33 +                        ForeignKey::create()                   
+      34 +                            .name("fk_salary_increments_staff_s
+         +alary_id")                                                     
+      35 +                            .from(SalaryIncrements::Table, Sala
+         +ryIncrements::StaffSalaryId)                                   
+      36 +                            .to(Alias::new("staff_salaries"), A
+         +lias::new("id"))                                               
+      37 +                            .on_delete(ForeignKeyAction::Restri
+         +ct),                                                           
+      38 +                    )                                          
+      39 +                    .foreign_key(                              
+      40 +                        ForeignKey::create()                   
+      41 +                            .name("fk_salary_increments_approve
+         +d_by")                                                         
+      42 +                            .from(SalaryIncrements::Table, Sala
+         +ryIncrements::ApprovedBy)                                      
+      43 +                            .to(Alias::new("users"), Alias::new
+         +("id"))                                                        
+      44 +                            .on_delete(ForeignKeyAction::Restri
+         +ct),                                                           
+      45 +                    )                                          
+      46                      .to_owned(),
+      47              )
+      48              .await
+      49      }
+      50  
+      51      async fn down(&self, manager: &SchemaManager) -> Result<(),
+           DbErr> {
+      26 -        // Replace the sample below with your own migration scr
+         -ipts                                                           
+      27 -        todo!();                                               
+      28 -                                                               
+      52          manager
+      30 -            .drop_table(Table::drop().table(Post::Table).to_own
+         -ed())                                                          
+      53 +            .drop_table(Table::drop().table(SalaryIncrements::T
+         +able).to_owned())                                              
+      54              .await
+      55      }
+      56  }
+      57  
+      58  #[derive(DeriveIden)]
+      36 -enum Post {                                                    
+      59 +enum SalaryIncrements {                                        
+      60      Table,
+      61      Id,
+      39 -    Title,                                                     
+      40 -    Text,                                                      
+      62 +    StaffId,                                                   
+      63 +    StaffSalaryId,                                             
+      64 +    IncrementType,                                             
+      65 +    PreviousBasicSalary,                                       
+      66 +    NewBasicSalary,                                            
+      67 +    IncrementAmount,                                           
+      68 +    EffectiveFrom,                                             
+      69 +    Reason,                                                    
+      70 +    ApprovedBy,                                                
+      71 +    CreatedAt,                                                 
+      72  }
+
+● Write(migration/src/m20260520_150443_create_salary_payments_table.rs)
+  ⎿  Added 54 lines, removed 14 lines
+       6  #[async_trait::async_trait]
+       7  impl MigrationTrait for Migration {
+       8      async fn up(&self, manager: &SchemaManager) -> Result<(), D
+          bErr> {
+       9 -        // Replace the sample below with your own migration scr
+         -ipts                                                           
+      10 -        todo!();                                               
+      11 -                                                               
+       9          manager
+      10              .create_table(
+      11                  Table::create()
+      15 -                    .table(Post::Table)                        
+      12 +                    .table(SalaryPayments::Table)              
+      13                      .if_not_exists()
+      17 -                    .col(pk_auto(Post::Id))                    
+      18 -                    .col(string(Post::Title))                  
+      19 -                    .col(string(Post::Text))                   
+      14 +                    .col(pk_auto(SalaryPayments::Id))          
+      15 +                    .col(integer(SalaryPayments::StaffMonthlySa
+         +laryId))                                                       
+      16 +                    .col(integer(SalaryPayments::StaffId))     
+      17 +                    .col(integer(SalaryPayments::AmountPaid))  
+      18 +                    .col(integer(SalaryPayments::PaymentMethodI
+         +d))                                                            
+      19 +                    .col(string_null(SalaryPayments::ReferenceN
+         +umber))                                                        
+      20 +                    .col(date(SalaryPayments::PaymentDate))    
+      21 +                    .col(string_uniq(SalaryPayments::ReceiptNum
+         +ber))                                                          
+      22 +                    .col(string_null(SalaryPayments::Remarks)) 
+      23 +                    .col(integer(SalaryPayments::PaidBy))      
+      24 +                    .col(timestamp_with_time_zone(SalaryPayment
+         +s::CreatedAt))                                                 
+      25 +                    .col(timestamp_with_time_zone(SalaryPayment
+         +s::UpdatedAt))                                                 
+      26 +                    .foreign_key(                              
+      27 +                        ForeignKey::create()                   
+      28 +                            .name("fk_salary_payments_staff_mon
+         +thly_salary_id")                                               
+      29 +                            .from(SalaryPayments::Table, Salary
+         +Payments::StaffMonthlySalaryId)                                
+      30 +                            .to(Alias::new("staff_monthly_salar
+         +ies"), Alias::new("id"))                                       
+      31 +                            .on_delete(ForeignKeyAction::Restri
+         +ct),                                                           
+      32 +                    )                                          
+      33 +                    .foreign_key(                              
+      34 +                        ForeignKey::create()                   
+      35 +                            .name("fk_salary_payments_staff_id"
+         +)                                                              
+      36 +                            .from(SalaryPayments::Table, Salary
+         +Payments::StaffId)                                             
+      37 +                            .to(Alias::new("staff"), Alias::new
+         +("id"))                                                        
+      38 +                            .on_delete(ForeignKeyAction::Restri
+         +ct),                                                           
+      39 +                    )                                          
+      40 +                    .foreign_key(                              
+      41 +                        ForeignKey::create()                   
+      42 +                            .name("fk_salary_payments_payment_m
+         +ethod_id")                                                     
+      43 +                            .from(SalaryPayments::Table, Salary
+         +Payments::PaymentMethodId)                                     
+      44 +                            .to(Alias::new("payment_methods"), 
+         +Alias::new("id"))                                              
+      45 +                            .on_delete(ForeignKeyAction::Restri
+         +ct),                                                           
+      46 +                    )                                          
+      47 +                    .foreign_key(                              
+      48 +                        ForeignKey::create()                   
+      49 +                            .name("fk_salary_payments_paid_by")
+      50 +                            .from(SalaryPayments::Table, Salary
+         +Payments::PaidBy)                                              
+      51 +                            .to(Alias::new("users"), Alias::new
+         +("id"))                                                        
+      52 +                            .on_delete(ForeignKeyAction::Restri
+         +ct),                                                           
+      53 +                    )                                          
+      54                      .to_owned(),
+      55              )
+      56              .await
+      57      }
+      58  
+      59      async fn down(&self, manager: &SchemaManager) -> Result<(),
+           DbErr> {
+      26 -        // Replace the sample below with your own migration scr
+         -ipts                                                           
+      27 -        todo!();                                               
+      28 -                                                               
+      60          manager
+      30 -            .drop_table(Table::drop().table(Post::Table).to_own
+         -ed())                                                          
+      61 +            .drop_table(Table::drop().table(SalaryPayments::Tab
+         +le).to_owned())                                                
+      62              .await
+      63      }
+      64  }
+      65  
+      66  #[derive(DeriveIden)]
+      36 -enum Post {                                                    
+      67 +enum SalaryPayments {                                          
+      68      Table,
+      69      Id,
+      39 -    Title,                                                     
+      40 -    Text,                                                      
+      70 +    StaffMonthlySalaryId,                                      
+      71 +    StaffId,                                                   
+      72 +    AmountPaid,                                                
+      73 +    PaymentMethodId,                                           
+      74 +    ReferenceNumber,                                           
+      75 +    PaymentDate,                                               
+      76 +    ReceiptNumber,                                             
+      77 +    Remarks,                                                   
+      78 +    PaidBy,                                                    
+      79 +    CreatedAt,                                                 
+      80 +    UpdatedAt,                                                 
+      81  }
+● Write(migration/src/m20260520_150443_create_leave_types_table.rs)
+  ⎿  Added 27 lines, removed 14 lines
+       6  #[async_trait::async_trait]
+       7  impl MigrationTrait for Migration {
+       8      async fn up(&self, manager: &SchemaManager) -> Result<(), D
+          bErr> {
+       9 -        // Replace the sample below with your own migration scr
+         -ipts                                                           
+      10 -        todo!();                                               
+      11 -                                                               
+       9          manager
+      10              .create_table(
+      11                  Table::create()
+      15 -                    .table(Post::Table)                        
+      12 +                    .table(LeaveTypes::Table)                  
+      13                      .if_not_exists()
+      17 -                    .col(pk_auto(Post::Id))                    
+      18 -                    .col(string(Post::Title))                  
+      19 -                    .col(string(Post::Text))                   
+      14 +                    .col(pk_auto(LeaveTypes::Id))              
+      15 +                    .col(integer(LeaveTypes::OrganizationId))  
+      16 +                    .col(string(LeaveTypes::Name))             
+      17 +                    .col(string_null(LeaveTypes::NameUrdu))    
+      18 +                    .col(integer(LeaveTypes::MaxDaysPerYear))  
+      19 +                    .col(boolean(LeaveTypes::IsPaid))          
+      20 +                    .col(boolean(LeaveTypes::IsActive))        
+      21 +                    .col(timestamp_with_time_zone(LeaveTypes::C
+         +reatedAt))                                                     
+      22 +                    .col(timestamp_with_time_zone(LeaveTypes::U
+         +pdatedAt))                                                     
+      23 +                    .foreign_key(                              
+      24 +                        ForeignKey::create()                   
+      25 +                            .name("fk_leave_types_organization_
+         +id")                                                           
+      26 +                            .from(LeaveTypes::Table, LeaveTypes
+         +::OrganizationId)                                              
+      27 +                            .to(Alias::new("organizations"), Al
+         +ias::new("id"))                                                
+      28 +                            .on_delete(ForeignKeyAction::Restri
+         +ct),                                                           
+      29 +                    )                                          
+      30                      .to_owned(),
+      31              )
+      32              .await
+      33      }
+      34  
+      35      async fn down(&self, manager: &SchemaManager) -> Result<(),
+           DbErr> {
+      26 -        // Replace the sample below with your own migration scr
+         -ipts                                                           
+      27 -        todo!();                                               
+      28 -                                                               
+      36          manager
+      30 -            .drop_table(Table::drop().table(Post::Table).to_own
+         -ed())                                                          
+      37 +            .drop_table(Table::drop().table(LeaveTypes::Table).
+         +to_owned())                                                    
+      38              .await
+      39      }
+      40  }
+      41  
+      42  #[derive(DeriveIden)]
+      36 -enum Post {                                                    
+      43 +enum LeaveTypes {                                              
+      44      Table,
+      45      Id,
+      39 -    Title,                                                     
+      40 -    Text,                                                      
+      46 +    OrganizationId,                                            
+      47 +    Name,                                                      
+      48 +    NameUrdu,                                                  
+      49 +    MaxDaysPerYear,                                            
+      50 +    IsPaid,                                                    
+      51 +    IsActive,                                                  
+      52 +    CreatedAt,                                                 
+      53 +    UpdatedAt,                                                 
+      54  }
+
+● Write(migration/src/m20260520_150443_create_staff_leaves_table.rs)
+  ⎿  Added 56 lines, removed 14 lines
+       6  #[async_trait::async_trait]
+       7  impl MigrationTrait for Migration {
+       8      async fn up(&self, manager: &SchemaManager) -> Result<(), D
+          bErr> {
+       9 -        // Replace the sample below with your own migration scr
+         -ipts                                                           
+      10 -        todo!();                                               
+      11 -                                                               
+       9          manager
+      10              .create_table(
+      11                  Table::create()
+      15 -                    .table(Post::Table)                        
+      12 +                    .table(StaffLeaves::Table)                 
+      13                      .if_not_exists()
+      17 -                    .col(pk_auto(Post::Id))                    
+      18 -                    .col(string(Post::Title))                  
+      19 -                    .col(string(Post::Text))                   
+      14 +                    .col(pk_auto(StaffLeaves::Id))             
+      15 +                    .col(integer(StaffLeaves::StaffId))        
+      16 +                    .col(integer(StaffLeaves::BranchId))       
+      17 +                    .col(integer(StaffLeaves::LeaveTypeId))    
+      18 +                    .col(date(StaffLeaves::StartDate))         
+      19 +                    .col(date(StaffLeaves::EndDate))           
+      20 +                    .col(integer(StaffLeaves::Days))           
+      21 +                    .col(string_null(StaffLeaves::Reason))     
+      22 +                    .col(string(StaffLeaves::Status))          
+      23 +                    .col(integer_null(StaffLeaves::ApprovedBy))
+      24 +                    .col(string_null(StaffLeaves::RejectionReas
+         +on))                                                           
+      25 +                    .col(timestamp_with_time_zone(StaffLeaves::
+         +CreatedAt))                                                    
+      26 +                    .col(timestamp_with_time_zone(StaffLeaves::
+         +UpdatedAt))                                                    
+      27 +                    .foreign_key(                              
+      28 +                        ForeignKey::create()                   
+      29 +                            .name("fk_staff_leaves_staff_id")  
+      30 +                            .from(StaffLeaves::Table, StaffLeav
+         +es::StaffId)                                                   
+      31 +                            .to(Alias::new("staff"), Alias::new
+         +("id"))                                                        
+      32 +                            .on_delete(ForeignKeyAction::Restri
+         +ct),                                                           
+      33 +                    )                                          
+      34 +                    .foreign_key(                              
+      35 +                        ForeignKey::create()                   
+      36 +                            .name("fk_staff_leaves_branch_id") 
+      37 +                            .from(StaffLeaves::Table, StaffLeav
+         +es::BranchId)                                                  
+      38 +                            .to(Alias::new("branches"), Alias::
+         +new("id"))                                                     
+      39 +                            .on_delete(ForeignKeyAction::Restri
+         +ct),                                                           
+      40 +                    )                                          
+      41 +                    .foreign_key(                              
+      42 +                        ForeignKey::create()                   
+      43 +                            .name("fk_staff_leaves_leave_type_i
+         +d")                                                            
+      44 +                            .from(StaffLeaves::Table, StaffLeav
+         +es::LeaveTypeId)                                               
+      45 +                            .to(Alias::new("leave_types"), Alia
+         +s::new("id"))                                                  
+      46 +                            .on_delete(ForeignKeyAction::Restri
+         +ct),                                                           
+      47 +                    )                                          
+      48 +                    .foreign_key(                              
+      49 +                        ForeignKey::create()                   
+      50 +                            .name("fk_staff_leaves_approved_by"
+         +)                                                              
+      51 +                            .from(StaffLeaves::Table, StaffLeav
+         +es::ApprovedBy)                                                
+      52 +                            .to(Alias::new("users"), Alias::new
+         +("id"))                                                        
+      53 +                            .on_delete(ForeignKeyAction::Restri
+         +ct),                                                           
+      54 +                    )                                          
+      55                      .to_owned(),
+      56              )
+      57              .await
+      58      }
+      59  
+      60      async fn down(&self, manager: &SchemaManager) -> Result<(),
+           DbErr> {
+      26 -        // Replace the sample below with your own migration scr
+         -ipts                                                           
+      27 -        todo!();                                               
+      28 -                                                               
+      61          manager
+      30 -            .drop_table(Table::drop().table(Post::Table).to_own
+         -ed())                                                          
+      62 +            .drop_table(Table::drop().table(StaffLeaves::Table)
+         +.to_owned())                                                   
+      63              .await
+      64      }
+      65  }
+      66  
+      67  #[derive(DeriveIden)]
+      36 -enum Post {                                                    
+      68 +enum StaffLeaves {                                             
+      69      Table,
+      70      Id,
+      39 -    Title,                                                     
+      40 -    Text,                                                      
+      71 +    StaffId,                                                   
+      72 +    BranchId,                                                  
+      73 +    LeaveTypeId,                                               
+      74 +    StartDate,                                                 
+      75 +    EndDate,                                                   
+      76 +    Days,                                                      
+      77 +    Reason,                                                    
+      78 +    Status,                                                    
+      79 +    ApprovedBy,                                                
+      80 +    RejectionReason,                                           
+      81 +    CreatedAt,                                                 
+      82 +    UpdatedAt,                                                 
+      83  }
+
+● Write(migration/src/m20260520_150443_create_staff_loans_table.rs)
+  ⎿  Added 49 lines, removed 14 lines
+       6  #[async_trait::async_trait]
+       7  impl MigrationTrait for Migration {
+       8      async fn up(&self, manager: &SchemaManager) -> Result<(), D
+          bErr> {
+       9 -        // Replace the sample below with your own migration scr
+         -ipts                                                           
+      10 -        todo!();                                               
+      11 -                                                               
+       9          manager
+      10              .create_table(
+      11                  Table::create()
+      15 -                    .table(Post::Table)                        
+      12 +                    .table(StaffLoans::Table)                  
+      13                      .if_not_exists()
+      17 -                    .col(pk_auto(Post::Id))                    
+      18 -                    .col(string(Post::Title))                  
+      19 -                    .col(string(Post::Text))                   
+      14 +                    .col(pk_auto(StaffLoans::Id))              
+      15 +                    .col(integer(StaffLoans::StaffId))         
+      16 +                    .col(integer(StaffLoans::BranchId))        
+      17 +                    .col(integer(StaffLoans::Amount))          
+      18 +                    .col(string_null(StaffLoans::Purpose))     
+      19 +                    .col(integer(StaffLoans::Installments))    
+      20 +                    .col(integer(StaffLoans::InstallmentAmount)
+         +)                                                              
+      21 +                    .col(integer(StaffLoans::StartMonth))      
+      22 +                    .col(integer(StaffLoans::StartYear))       
+      23 +                    .col(string(StaffLoans::Status))           
+      24 +                    .col(integer(StaffLoans::ApprovedBy))      
+      25 +                    .col(timestamp_with_time_zone(StaffLoans::C
+         +reatedAt))                                                     
+      26 +                    .col(timestamp_with_time_zone(StaffLoans::U
+         +pdatedAt))                                                     
+      27 +                    .foreign_key(                              
+      28 +                        ForeignKey::create()                   
+      29 +                            .name("fk_staff_loans_staff_id")   
+      30 +                            .from(StaffLoans::Table, StaffLoans
+         +::StaffId)                                                     
+      31 +                            .to(Alias::new("staff"), Alias::new
+         +("id"))                                                        
+      32 +                            .on_delete(ForeignKeyAction::Restri
+         +ct),                                                           
+      33 +                    )                                          
+      34 +                    .foreign_key(                              
+      35 +                        ForeignKey::create()                   
+      36 +                            .name("fk_staff_loans_branch_id")  
+      37 +                            .from(StaffLoans::Table, StaffLoans
+         +::BranchId)                                                    
+      38 +                            .to(Alias::new("branches"), Alias::
+         +new("id"))                                                     
+      39 +                            .on_delete(ForeignKeyAction::Restri
+         +ct),                                                           
+      40 +                    )                                          
+      41 +                    .foreign_key(                              
+      42 +                        ForeignKey::create()                   
+      43 +                            .name("fk_staff_loans_approved_by")
+      44 +                            .from(StaffLoans::Table, StaffLoans
+         +::ApprovedBy)                                                  
+      45 +                            .to(Alias::new("users"), Alias::new
+         +("id"))                                                        
+      46 +                            .on_delete(ForeignKeyAction::Restri
+         +ct),                                                           
+      47 +                    )                                          
+      48                      .to_owned(),
+      49              )
+      50              .await
+      51      }
+      52  
+      53      async fn down(&self, manager: &SchemaManager) -> Result<(),
+           DbErr> {
+      26 -        // Replace the sample below with your own migration scr
+         -ipts                                                           
+      27 -        todo!();                                               
+      28 -                                                               
+      54          manager
+      30 -            .drop_table(Table::drop().table(Post::Table).to_own
+         -ed())                                                          
+      55 +            .drop_table(Table::drop().table(StaffLoans::Table).
+         +to_owned())                                                    
+      56              .await
+      57      }
+      58  }
+      59  
+      60  #[derive(DeriveIden)]
+      36 -enum Post {                                                    
+      61 +enum StaffLoans {                                              
+      62      Table,
+      63      Id,
+      39 -    Title,                                                     
+      40 -    Text,                                                      
+      64 +    StaffId,                                                   
+      65 +    BranchId,                                                  
+      66 +    Amount,                                                    
+      67 +    Purpose,                                                   
+      68 +    Installments,                                              
+      69 +    InstallmentAmount,                                         
+      70 +    StartMonth,                                                
+      71 +    StartYear,                                                 
+      72 +    Status,                                                    
+      73 +    ApprovedBy,                                                
+      74 +    CreatedAt,                                                 
+      75 +    UpdatedAt,                                                 
+      76  }
+
+● Write(migration/src/m20260520_150443_create_staff_loan_deductions_table.rs)
+  ⎿  Added 26 lines, removed 14 lines
+       6  #[async_trait::async_trait]
+       7  impl MigrationTrait for Migration {
+       8      async fn up(&self, manager: &SchemaManager) -> Result<(), D
+          bErr> {
+       9 -        // Replace the sample below with your own migration scr
+         -ipts                                                           
+      10 -        todo!();                                               
+      11 -                                                               
+       9          manager
+      10              .create_table(
+      11                  Table::create()
+      15 -                    .table(Post::Table)                        
+      12 +                    .table(StaffLoanDeductions::Table)         
+      13                      .if_not_exists()
+      17 -                    .col(pk_auto(Post::Id))                    
+      18 -                    .col(string(Post::Title))                  
+      19 -                    .col(string(Post::Text))                   
+      14 +                    .col(pk_auto(StaffLoanDeductions::Id))     
+      15 +                    .col(integer(StaffLoanDeductions::StaffLoan
+         +Id))                                                           
+      16 +                    .col(integer(StaffLoanDeductions::StaffMont
+         +hlySalaryId))                                                  
+      17 +                    .col(integer(StaffLoanDeductions::AmountDed
+         +ucted))                                                        
+      18 +                    .col(timestamp_with_time_zone(StaffLoanDedu
+         +ctions::CreatedAt))                                            
+      19 +                    .foreign_key(                              
+      20 +                        ForeignKey::create()                   
+      21 +                            .name("fk_sld_staff_loan_id")      
+      22 +                            .from(StaffLoanDeductions::Table, S
+         +taffLoanDeductions::StaffLoanId)                               
+      23 +                            .to(Alias::new("staff_loans"), Alia
+         +s::new("id"))                                                  
+      24 +                            .on_delete(ForeignKeyAction::Cascad
+         +e),                                                            
+      25 +                    )                                          
+      26 +                    .foreign_key(                              
+      27 +                        ForeignKey::create()                   
+      28 +                            .name("fk_sld_staff_monthly_salary_
+         +id")                                                           
+      29 +                            .from(StaffLoanDeductions::Table, S
+         +taffLoanDeductions::StaffMonthlySalaryId)                      
+      30 +                            .to(Alias::new("staff_monthly_salar
+         +ies"), Alias::new("id"))                                       
+      31 +                            .on_delete(ForeignKeyAction::Restri
+         +ct),                                                           
+      32 +                    )                                          
+      33                      .to_owned(),
+      34              )
+      35              .await
+      36      }
+      37  
+      38      async fn down(&self, manager: &SchemaManager) -> Result<(),
+           DbErr> {
+      26 -        // Replace the sample below with your own migration scr
+         -ipts                                                           
+      27 -        todo!();                                               
+      28 -                                                               
+      39          manager
+      30 -            .drop_table(Table::drop().table(Post::Table).to_own
+         -ed())                                                          
+      40 +            .drop_table(Table::drop().table(StaffLoanDeductions
+         +::Table).to_owned())                                           
+      41              .await
+      42      }
+      43  }
+      44  
+      45  #[derive(DeriveIden)]
+      36 -enum Post {                                                    
+      46 +enum StaffLoanDeductions {                                     
+      47      Table,
+      48      Id,
+      39 -    Title,                                                     
+      40 -    Text,                                                      
+      49 +    StaffLoanId,                                               
+      50 +    StaffMonthlySalaryId,                                      
+      51 +    AmountDeducted,                                            
+      52 +    CreatedAt,                                                 
+      53  }
+
+● All 13 migrations written. Now applying them to the database.
+
+● Bash(sea-orm-cli migrate up --database-url
+      postgres://rsedu:rsedu_password@localhost:5432/rsedu -d backend/migration
+      2>&1)
+  ⎿  Running `cargo run --manifest-path backend/migration/Cargo.toml -- up`
+        Compiling backend-migration v0.1.0 (/home/sayyed/rsEdu/backend/migr
+     ation)
+     … +29 lines (ctrl+o to expand)
+
+● All 13 migrations applied. Now generating entities.
+
+● Bash(sea-orm-cli generate entity -u
+      postgres://rsedu:rsedu_password@localhost:5432/rsedu -o
+      /home/sayyed/rsEdu/backend/src/entities 2>&1)
+  ⎿  Connecting to Postgres ...
+     Discovering schema ...
+     ... discovered.
+     … +426 lines (ctrl+o to expand)
+
+● Entities generated. Now I'll create all the CRUD modules. Let me first check
+  the new entity files for the salary tables.
+
+  Read 2 files (ctrl+o to expand)
+
+● Note type is a reserved keyword in Rust — it's r#type in the entity. Now
+  creating all 13 CRUD modules. Let me first create directories.
+
+● Bash(mkdir -p /home/sayyed/rsEdu/backend/src/allowance_deduction_types \
+        /home/sayyed/rsEdu/backend/src/salary_structures \…)
+  ⎿  Done
+
+● Now creating all DTOs and handlers. Starting with the simpler modules in
+  parallel.
+
+● Write(src/allowance_deduction_types/mod.rs)
+  ⎿  Wrote 2 lines to src/allowance_deduction_types/mod.rs
+      1 pub mod dto;
+      2 pub mod handlers;
+
+● Write(src/salary_structures/mod.rs)
+  ⎿  Wrote 2 lines to src/salary_structures/mod.rs
+      1 pub mod dto;
+      2 pub mod handlers;
+
+● Write(src/salary_structure_components/mod.rs)
+  ⎿  Wrote 2 lines to src/salary_structure_components/mod.rs
+      1 pub mod dto;
+      2 pub mod handlers;
+
+● Write(src/staff_salaries/mod.rs)
+  ⎿  Wrote 2 lines to src/staff_salaries/mod.rs
+      1 pub mod dto;
+      2 pub mod handlers;
+
+● Write(src/staff_salary_allowances/mod.rs)
+  ⎿  Wrote 2 lines to src/staff_salary_allowances/mod.rs
+      1 pub mod dto;
+      2 pub mod handlers;
+
+● Write(src/staff_monthly_salaries/mod.rs)
+  ⎿  Wrote 2 lines to src/staff_monthly_salaries/mod.rs
+      1 pub mod dto;
+      2 pub mod handlers;
+
+● Write(src/staff_monthly_salary_details/mod.rs)
+  ⎿  Wrote 2 lines to src/staff_monthly_salary_details/mod.rs
+      1 pub mod dto;
+      2 pub mod handlers;
+
+● Write(src/salary_increments/mod.rs)
+  ⎿  Wrote 2 lines to src/salary_increments/mod.rs
+      1 pub mod dto;
+      2 pub mod handlers;
+
+● Write(src/salary_payments/mod.rs)
+  ⎿  Wrote 2 lines to src/salary_payments/mod.rs
+      1 pub mod dto;
+      2 pub mod handlers;
+
+● Write(src/leave_types/mod.rs)  ⎿  Wrote 2 lines to src/leave_types/mod.rs
+      1 pub mod dto;
+      2 pub mod handlers;
+
+● Write(src/staff_leaves/mod.rs)
+  ⎿  Wrote 2 lines to src/staff_leaves/mod.rs
+      1 pub mod dto;
+      2 pub mod handlers;
+
+● Write(src/staff_loans/mod.rs)
+  ⎿  Wrote 2 lines to src/staff_loans/mod.rs
+      1 pub mod dto;
+      2 pub mod handlers;
+
+● Write(src/staff_loan_deductions/mod.rs)
+  ⎿  Wrote 2 lines to src/staff_loan_deductions/mod.rs
+      1 pub mod dto;
+      2 pub mod handlers;
+
+● Now writing all DTOs in parallel.
+
+● Write(src/allowance_deduction_types/dto.rs)
+  ⎿  Wrote 41 lines to src/allowance_deduction_types/dto.rs
+       1 use serde::{Deserialize, Serialize};
+       2 
+       3 #[derive(Debug, Deserialize)]
+       4 pub struct CreateAllowanceDeductionTypeRequest {
+       5     pub organization_id: i32,
+       6     pub branch_id: Option<i32>,
+       7     pub name: String,
+       8     pub name_urdu: Option<String>,
+       9     pub r#type: String,
+      10     pub occurrence: String,
+     … +31 lines (ctrl+o to expand)
+
+● Write(src/salary_structures/dto.rs)
+  ⎿  Wrote 29 lines to src/salary_structures/dto.rs
+       1 use serde::{Deserialize, Serialize};
+       2 
+       3 #[derive(Debug, Deserialize)]
+       4 pub struct CreateSalaryStructureRequest {
+       5     pub organization_id: i32,
+       6     pub branch_id: Option<i32>,
+       7     pub name: String,
+       8     pub name_urdu: Option<String>,
+       9     pub description: Option<String>,
+      10 }
+     … +19 lines (ctrl+o to expand)
+
+● Write(src/salary_structure_components/dto.rs)
+  ⎿  Wrote 29 lines to src/salary_structure_components/dto.rs
+       1 use serde::{Deserialize, Serialize};
+       2 
+       3 #[derive(Debug, Deserialize)]
+       4 pub struct CreateSalaryStructureComponentRequest {
+       5     pub salary_structure_id: i32,
+       6     pub allowance_deduction_type_id: i32,
+       7     pub amount: i32,
+       8     pub calculation_type: String,
+       9     pub percentage_base: Option<String>,
+      10 }
+     … +19 lines (ctrl+o to expand)
+
+● Write(src/staff_salaries/dto.rs)
+  ⎿  Wrote 33 lines to src/staff_salaries/dto.rs
+       1 use serde::{Deserialize, Serialize};
+       2 
+       3 #[derive(Debug, Deserialize)]
+       4 pub struct CreateStaffSalaryRequest {
+       5     pub staff_id: i32,
+       6     pub salary_structure_id: i32,
+       7     pub basic_salary: i32,
+       8     pub effective_from: String,
+       9     pub effective_to: Option<String>,
+      10     pub remarks: Option<String>,
+     … +23 lines (ctrl+o to expand)
+
+● Write(src/staff_salary_allowances/dto.rs)
+  ⎿  Wrote 26 lines to src/staff_salary_allowances/dto.rs
+      1 use serde::{Deserialize, Serialize};
+      2 
+      3 #[derive(Debug, Deserialize)]
+      4 pub struct CreateStaffSalaryAllowanceRequest {
+      5     pub staff_salary_id: i32,
+      6     pub allowance_deduction_type_id: i32,
+      7     pub amount: i32,
+      8     pub calculation_type: String,
+      9 }
+     … +16 lines (ctrl+o to expand)
+
+● Write(src/staff_monthly_salaries/dto.rs)
+  ⎿  Wrote 55 lines to src/staff_monthly_salaries/dto.rs
+       1 use serde::{Deserialize, Serialize};
+       2 
+       3 #[derive(Debug, Deserialize)]
+       4 pub struct CreateStaffMonthlySalaryRequest {
+       5     pub staff_id: i32,
+       6     pub branch_id: i32,
+       7     pub academic_year_id: i32,
+       8     pub salary_month: i32,
+       9     pub salary_year: i32,
+      10     pub working_days: i32,
+     … +45 lines (ctrl+o to expand)
+
+● Write(src/staff_monthly_salary_details/dto.rs)
+  ⎿  Wrote 32 lines to src/staff_monthly_salary_details/dto.rs
+       1 use serde::{Deserialize, Serialize};
+       2 
+       3 #[derive(Debug, Deserialize)]
+       4 pub struct CreateStaffMonthlySalaryDetailRequest {
+       5     pub staff_monthly_salary_id: i32,
+       6     pub allowance_deduction_type_id: Option<i32>,
+       7     pub description: String,
+       8     pub r#type: String,
+       9     pub amount: i32,
+      10     pub is_adhoc: bool,
+     … +22 lines (ctrl+o to expand)
+
+● Write(src/salary_increments/dto.rs)
+  ⎿  Wrote 33 lines to src/salary_increments/dto.rs
+       1 use serde::{Deserialize, Serialize};
+       2 
+       3 #[derive(Debug, Deserialize)]
+       4 pub struct CreateSalaryIncrementRequest {
+       5     pub staff_id: i32,
+       6     pub staff_salary_id: i32,
+       7     pub increment_type: String,
+       8     pub previous_basic_salary: i32,
+       9     pub new_basic_salary: i32,
+      10     pub increment_amount: i32,
+     … +23 lines (ctrl+o to expand)
+
+● Write(src/salary_payments/dto.rs)
+  ⎿  Wrote 34 lines to src/salary_payments/dto.rs
+       1 use serde::{Deserialize, Serialize};
+       2 
+       3 #[derive(Debug, Deserialize)]
+       4 pub struct CreateSalaryPaymentRequest {
+       5     pub staff_monthly_salary_id: i32,
+       6     pub staff_id: i32,
+       7     pub amount_paid: i32,
+       8     pub payment_method_id: i32,
+       9     pub reference_number: Option<String>,
+      10     pub payment_date: String,
+     … +24 lines (ctrl+o to expand)
+
+● Write(src/leave_types/dto.rs)
+  ⎿  Wrote 30 lines to src/leave_types/dto.rs
+       1 use serde::{Deserialize, Serialize};
+       2 
+       3 #[derive(Debug, Deserialize)]
+       4 pub struct CreateLeaveTypeRequest {
+       5     pub organization_id: i32,
+       6     pub name: String,
+       7     pub name_urdu: Option<String>,
+       8     pub max_days_per_year: i32,
+       9     pub is_paid: bool,
+      10 }
+     … +20 lines (ctrl+o to expand)
+
+● Write(src/staff_leaves/dto.rs)
+  ⎿  Wrote 34 lines to src/staff_leaves/dto.rs
+       1 use serde::{Deserialize, Serialize};
+       2 
+       3 #[derive(Debug, Deserialize)]
+       4 pub struct CreateStaffLeaveRequest {
+       5     pub staff_id: i32,
+       6     pub branch_id: i32,
+       7     pub leave_type_id: i32,
+       8     pub start_date: String,
+       9     pub end_date: String,
+      10     pub days: i32,
+     … +24 lines (ctrl+o to expand)
+
+● Write(src/staff_loans/dto.rs)
+  ⎿  Wrote 35 lines to src/staff_loans/dto.rs
+       1 use serde::{Deserialize, Serialize};
+       2 
+       3 #[derive(Debug, Deserialize)]
+       4 pub struct CreateStaffLoanRequest {
+       5     pub staff_id: i32,
+       6     pub branch_id: i32,
+       7     pub amount: i32,
+       8     pub purpose: Option<String>,
+       9     pub installments: i32,
+      10     pub installment_amount: i32,
+     … +25 lines (ctrl+o to expand)
+
+● Write(src/staff_loan_deductions/dto.rs)
+  ⎿  Wrote 21 lines to src/staff_loan_deductions/dto.rs
+       1 use serde::{Deserialize, Serialize};
+       2 
+       3 #[derive(Debug, Deserialize)]
+       4 pub struct CreateStaffLoanDeductionRequest {
+       5     pub staff_loan_id: i32,
+       6     pub staff_monthly_salary_id: i32,
+       7     pub amount_deducted: i32,
+       8 }
+       9 
+      10 #[derive(Debug, Deserialize)]
+     … +11 lines (ctrl+o to expand)
+
+● All DTOs written. Now writing all handlers. Let me check the relevant entity
+  files before creating handlers for date-typed fields.
+
+  Read 2 files (ctrl+o to expand)
+
+● Let me check how existing handlers deal with Date fields.
+
+  Searched for 1 pattern, read 1 file (ctrl+o to expand)
+● Good. Now writing all 13 handlers in parallel batches.
+
+● Write(src/allowance_deduction_types/handlers.rs)
+  ⎿  Wrote 143 lines to src/allowance_deduction_types/handlers.rs
+       2     extract::{Path, State, Extension},
+       3     http::StatusCode,
+       4     Json,
+       5 };
+       6 use sea_orm::{ActiveModelTrait, ActiveValue, ColumnTrait, Entity
+         Trait, QueryFilter};
+       7 use chrono::Utc;
+       8 
+       9 use crate::{
+      10     AppState,
+     … +165 lines (ctrl+o to expand)
+
+● Write(src/salary_structures/handlers.rs)
+  ⎿  Wrote 131 lines to src/salary_structures/handlers.rs
+       2     extract::{Path, State, Extension},
+       3     http::StatusCode,
+       4     Json,
+       5 };
+       6 use sea_orm::{ActiveModelTrait, ActiveValue, ColumnTrait, Entity
+         Trait, QueryFilter};
+       7 use chrono::Utc;
+       8 
+       9 use crate::{
+      10     AppState,
+     … +145 lines (ctrl+o to expand)
+
+● Write(src/salary_structure_components/handlers.rs)
+  ⎿  Wrote 125 lines to src/salary_structure_components/handlers.rs
+       2     extract::{Path, State, Extension},
+       3     http::StatusCode,
+       4     Json,
+       5 };
+       6 use sea_orm::{ActiveModelTrait, ActiveValue, ColumnTrait, Entity
+         Trait, QueryFilter};
+       7 use chrono::Utc;
+       8 
+       9 use crate::{
+      10     AppState,
+     … +144 lines (ctrl+o to expand)
+
+● Write(src/staff_salaries/handlers.rs)
+  ⎿  Wrote 147 lines to src/staff_salaries/handlers.rs
+       2     extract::{Path, State, Extension},
+       3     http::StatusCode,
+       4     Json,
+       5 };
+       6 use sea_orm::{ActiveModelTrait, ActiveValue, ColumnTrait, Entity
+         Trait, QueryFilter};
+       7 use chrono::{NaiveDate, Utc};
+       8 
+       9 use crate::{
+      10     AppState,
+     … +163 lines (ctrl+o to expand)
+
+● Write(src/staff_salary_allowances/handlers.rs)
+  ⎿  Wrote 122 lines to src/staff_salary_allowances/handlers.rs
+       1 use axum::{
+       2     extract::{Path, State, Extension},
+       3     http::StatusCode,
+       4     Json,
+       5 };
+       6 use sea_orm::{ActiveModelTrait, ActiveValue, EntityTrait};
+       7 use chrono::Utc;
+       8 
+       9 use crate::{
+      10     AppState,
+     … +137 lines (ctrl+o to expand)
+
+● Write(src/leave_types/handlers.rs)
+  ⎿  Wrote 132 lines to src/leave_types/handlers.rs
+       2     extract::{Path, State, Extension},
+       3     http::StatusCode,
+       4     Json,
+       5 };
+       6 use sea_orm::{ActiveModelTrait, ActiveValue, ColumnTrait, Entity
+         Trait, QueryFilter};
+       7 use chrono::Utc;
+       8 
+       9 use crate::{
+      10     AppState,
+     … +146 lines (ctrl+o to expand)
+
+● Write(src/staff_monthly_salaries/handlers.rs)
+  ⎿  Wrote 168 lines to src/staff_monthly_salaries/handlers.rs
+       2     extract::{Path, State, Extension},
+       3     http::StatusCode,
+       4     Json,
+       5 };
+       6 use sea_orm::{ActiveModelTrait, ActiveValue, ColumnTrait, Entity
+         Trait, QueryFilter};
+       7 use chrono::{NaiveDate, Utc};
+       8 
+       9 use crate::{
+      10     AppState,
+     … +194 lines (ctrl+o to expand)
+
+● Write(src/staff_monthly_salary_details/handlers.rs)
+  ⎿  Wrote 125 lines to src/staff_monthly_salary_details/handlers.rs
+       2     extract::{Path, State, Extension},
+       3     http::StatusCode,
+       4     Json,
+       5 };
+       6 use sea_orm::{ActiveModelTrait, ActiveValue, ColumnTrait, Entity
+         Trait, QueryFilter};
+       7 use chrono::Utc;
+       8 
+       9 use crate::{
+      10     AppState,
+     … +146 lines (ctrl+o to expand)
+
+● Write(src/salary_increments/handlers.rs)
+  ⎿  Wrote 129 lines to src/salary_increments/handlers.rs
+       2     extract::{Path, State, Extension},
+       3     http::StatusCode,
+       4     Json,
+       5 };
+       6 use sea_orm::{ActiveModelTrait, ActiveValue, ColumnTrait, Entity
+         Trait, QueryFilter};
+       7 use chrono::{NaiveDate, Utc};
+       8 
+       9 use crate::{
+      10     AppState,
+     … +143 lines (ctrl+o to expand)
+
+● Write(src/salary_payments/handlers.rs)
+  ⎿  Wrote 132 lines to src/salary_payments/handlers.rs
+       1 use axum::{
+       2     extract::{Path, State, Extension},
+       3     http::StatusCode,
+       4     Json,
+       5 };
+       6 use sea_orm::{ActiveModelTrait, ActiveValue, EntityTrait};
+       7 use chrono::{NaiveDate, Utc};
+       8 
+       9 use crate::{
+      10     AppState,
+     … +145 lines (ctrl+o to expand)
+
+● Write(src/staff_leaves/handlers.rs)
+  ⎿  Wrote 143 lines to src/staff_leaves/handlers.rs
+       2     extract::{Path, State, Extension},
+       3     http::StatusCode,
+       4     Json,
+       5 };
+       6 use sea_orm::{ActiveModelTrait, ActiveValue, ColumnTrait, Entity
+         Trait, QueryFilter};
+       7 use chrono::{NaiveDate, Utc};
+       8 
+       9 use crate::{
+      10     AppState,
+     … +158 lines (ctrl+o to expand)
+
+● Write(src/staff_loans/handlers.rs)
+  ⎿  Wrote 137 lines to src/staff_loans/handlers.rs
+       2     extract::{Path, State, Extension},
+       3     http::StatusCode,
+       4     Json,
+       5 };
+       6 use sea_orm::{ActiveModelTrait, ActiveValue, ColumnTrait, Entity
+         Trait, QueryFilter};
+       7 use chrono::Utc;
+       8 
+       9 use crate::{
+      10     AppState,
+     … +148 lines (ctrl+o to expand)
+
+● Write(src/staff_loan_deductions/handlers.rs)
+  ⎿  Wrote 114 lines to src/staff_loan_deductions/handlers.rs
+       1 use axum::{
+       2     extract::{Path, State, Extension},
+       3     http::StatusCode,
+       4     Json,
+       5 };
+       6 use sea_orm::{ActiveModelTrait, ActiveValue, EntityTrait};
+       7 use chrono::Utc;
+       8 
+       9 use crate::{
+      10     AppState,
+     … +126 lines (ctrl+o to expand)
+
+● All 13 handlers written. Now updating main.rs with all new module declarations
+   and routes.
+
+● Update(src/main.rs)
+  ⎿  Added 13 lines
+      36  mod exams;
+      37  mod exam_subjects;
+      38  mod transfers;
+      39 +mod allowance_deduction_types;                                 
+      40 +mod salary_structures;                                         
+      41 +mod salary_structure_components;                               
+      42 +mod staff_salaries;                                            
+      43 +mod staff_salary_allowances;                                   
+      44 +mod staff_monthly_salaries;                                    
+      45 +mod staff_monthly_salary_details;                              
+      46 +mod salary_increments;                                         
+      47 +mod salary_payments;                                           
+      48 +mod leave_types;                                               
+      49 +mod staff_leaves;                                              
+      50 +mod staff_loans;                                               
+      51 +mod staff_loan_deductions;                                     
+      52  
+      53  #[derive(Clone)]
+      54  pub struct AppState {
+
+● Update(src/main.rs)
+  ⎿  Added 78 lines
+      242          .route("/api/v1/transfers/{id}", get(transfers::handle
+           rs::get_transfer))
+      243          .route("/api/v1/transfers/{id}", put(transfers::handle
+           rs::update_transfer))
+      244          .route("/api/v1/transfers/{id}", delete(transfers::han
+           dlers::delete_transfer))
+      245 +        // Allowance/deduction type routes                    
+      246 +        .route("/api/v1/allowance-deduction-types", post(allow
+          +ance_deduction_types::handlers::create_allowance_deduction_typ
+          +e))                                                           
+      247 +        .route("/api/v1/allowance-deduction-types", get(allowa
+          +nce_deduction_types::handlers::get_allowance_deduction_types))
+      248 +        .route("/api/v1/allowance-deduction-types/{id}", get(a
+          +llowance_deduction_types::handlers::get_allowance_deduction_ty
+          +pe))                                                          
+      249 +        .route("/api/v1/allowance-deduction-types/{id}", put(a
+          +llowance_deduction_types::handlers::update_allowance_deduction
+          +_type))                                                       
+      250 +        .route("/api/v1/allowance-deduction-types/{id}", delet
+          +e(allowance_deduction_types::handlers::delete_allowance_deduct
+          +ion_type))                                                    
+      251 +        // Salary structure routes                            
+      252 +        .route("/api/v1/salary-structures", post(salary_struct
+          +ures::handlers::create_salary_structure))                     
+      253 +        .route("/api/v1/salary-structures", get(salary_structu
+          +res::handlers::get_salary_structures))                        
+      254 +        .route("/api/v1/salary-structures/{id}", get(salary_st
+          +ructures::handlers::get_salary_structure))                    
+      255 +        .route("/api/v1/salary-structures/{id}", put(salary_st
+          +ructures::handlers::update_salary_structure))                 
+      256 +        .route("/api/v1/salary-structures/{id}", delete(salary
+          +_structures::handlers::delete_salary_structure))              
+      257 +        // Salary structure component routes                  
+      258 +        .route("/api/v1/salary-structure-components", post(sal
+          +ary_structure_components::handlers::create_salary_structure_co
+          +mponent))                                                     
+      259 +        .route("/api/v1/salary-structure-components", get(sala
+          +ry_structure_components::handlers::get_salary_structure_compon
+          +ents))                                                        
+      260 +        .route("/api/v1/salary-structure-components/{id}", get
+          +(salary_structure_components::handlers::get_salary_structure_c
+          +omponent))                                                    
+      261 +        .route("/api/v1/salary-structure-components/{id}", put
+          +(salary_structure_components::handlers::update_salary_structur
+          +e_component))                                                 
+      262 +        .route("/api/v1/salary-structure-components/{id}", del
+          +ete(salary_structure_components::handlers::delete_salary_struc
+          +ture_component))                                              
+      263 +        // Staff salary routes                                
+      264 +        .route("/api/v1/staff-salaries", post(staff_salaries::
+          +handlers::create_staff_salary))                               
+      265 +        .route("/api/v1/staff-salaries", get(staff_salaries::h
+          +andlers::get_staff_salaries))                                 
+      266 +        .route("/api/v1/staff-salaries/{id}", get(staff_salari
+          +es::handlers::get_staff_salary))                              
+      267 +        .route("/api/v1/staff-salaries/{id}", put(staff_salari
+          +es::handlers::update_staff_salary))                           
+      268 +        .route("/api/v1/staff-salaries/{id}", delete(staff_sal
+          +aries::handlers::delete_staff_salary))                        
+      269 +        // Staff salary allowance routes                      
+      270 +        .route("/api/v1/staff-salary-allowances", post(staff_s
+          +alary_allowances::handlers::create_staff_salary_allowance))   
+      271 +        .route("/api/v1/staff-salary-allowances", get(staff_sa
+          +lary_allowances::handlers::get_staff_salary_allowances))      
+      272 +        .route("/api/v1/staff-salary-allowances/{id}", get(sta
+          +ff_salary_allowances::handlers::get_staff_salary_allowance))  
+      273 +        .route("/api/v1/staff-salary-allowances/{id}", put(sta
+          +ff_salary_allowances::handlers::update_staff_salary_allowance)
+          +)                                                             
+      274 +        .route("/api/v1/staff-salary-allowances/{id}", delete(
+          +staff_salary_allowances::handlers::delete_staff_salary_allowan
+          +ce))                                                          
+      275 +        // Staff monthly salary routes                        
+      276 +        .route("/api/v1/staff-monthly-salaries", post(staff_mo
+          +nthly_salaries::handlers::create_staff_monthly_salary))       
+      277 +        .route("/api/v1/staff-monthly-salaries", get(staff_mon
+          +thly_salaries::handlers::get_staff_monthly_salaries))         
+      278 +        .route("/api/v1/staff-monthly-salaries/{id}", get(staf
+          +f_monthly_salaries::handlers::get_staff_monthly_salary))      
+      279 +        .route("/api/v1/staff-monthly-salaries/{id}", put(staf
+          +f_monthly_salaries::handlers::update_staff_monthly_salary))   
+      280 +        .route("/api/v1/staff-monthly-salaries/{id}", delete(s
+          +taff_monthly_salaries::handlers::delete_staff_monthly_salary))
+      281 +        // Staff monthly salary detail routes                 
+      282 +        .route("/api/v1/staff-monthly-salary-details", post(st
+          +aff_monthly_salary_details::handlers::create_staff_monthly_sal
+          +ary_detail))                                                  
+      283 +        .route("/api/v1/staff-monthly-salary-details", get(sta
+          +ff_monthly_salary_details::handlers::get_staff_monthly_salary_
+          +details))                                                     
+      284 +        .route("/api/v1/staff-monthly-salary-details/{id}", ge
+          +t(staff_monthly_salary_details::handlers::get_staff_monthly_sa
+          +lary_detail))                                                 
+      285 +        .route("/api/v1/staff-monthly-salary-details/{id}", pu
+          +t(staff_monthly_salary_details::handlers::update_staff_monthly
+          +_salary_detail))                                              
+      286 +        .route("/api/v1/staff-monthly-salary-details/{id}", de
+          +lete(staff_monthly_salary_details::handlers::delete_staff_mont
+          +hly_salary_detail))                                           
+      287 +        // Salary increment routes                            
+      288 +        .route("/api/v1/salary-increments", post(salary_increm
+          +ents::handlers::create_salary_increment))                     
+      289 +        .route("/api/v1/salary-increments", get(salary_increme
+          +nts::handlers::get_salary_increments))                        
+      290 +        .route("/api/v1/salary-increments/{id}", get(salary_in
+          +crements::handlers::get_salary_increment))                    
+      291 +        .route("/api/v1/salary-increments/{id}", put(salary_in
+          +crements::handlers::update_salary_increment))                 
+      292 +        .route("/api/v1/salary-increments/{id}", delete(salary
+          +_increments::handlers::delete_salary_increment))              
+      293 +        // Salary payment routes                              
+      294 +        .route("/api/v1/salary-payments", post(salary_payments
+          +::handlers::create_salary_payment))                           
+      295 +        .route("/api/v1/salary-payments", get(salary_payments:
+          +:handlers::get_salary_payments))                              
+      296 +        .route("/api/v1/salary-payments/{id}", get(salary_paym
+          +ents::handlers::get_salary_payment))                          
+      297 +        .route("/api/v1/salary-payments/{id}", put(salary_paym
+          +ents::handlers::update_salary_payment))                       
+      298 +        .route("/api/v1/salary-payments/{id}", delete(salary_p
+          +ayments::handlers::delete_salary_payment))                    
+      299 +        // Leave type routes                                  
+      300 +        .route("/api/v1/leave-types", post(leave_types::handle
+          +rs::create_leave_type))                                       
+      301 +        .route("/api/v1/leave-types", get(leave_types::handler
+          +s::get_leave_types))                                          
+      302 +        .route("/api/v1/leave-types/{id}", get(leave_types::ha
+          +ndlers::get_leave_type))                                      
+      303 +        .route("/api/v1/leave-types/{id}", put(leave_types::ha
+          +ndlers::update_leave_type))                                   
+      304 +        .route("/api/v1/leave-types/{id}", delete(leave_types:
+          +:handlers::delete_leave_type))                                
+      305 +        // Staff leave routes                                 
+      306 +        .route("/api/v1/staff-leaves", post(staff_leaves::hand
+          +lers::create_staff_leave))                                    
+      307 +        .route("/api/v1/staff-leaves", get(staff_leaves::handl
+          +ers::get_staff_leaves))                                       
+      308 +        .route("/api/v1/staff-leaves/{id}", get(staff_leaves::
+          +handlers::get_staff_leave))                                   
+      309 +        .route("/api/v1/staff-leaves/{id}", put(staff_leaves::
+          +handlers::update_staff_leave))                                
+      310 +        .route("/api/v1/staff-leaves/{id}", delete(staff_leave
+          +s::handlers::delete_staff_leave))                             
+      311 +        // Staff loan routes                                  
+      312 +        .route("/api/v1/staff-loans", post(staff_loans::handle
+          +rs::create_staff_loan))                                       
+      313 +        .route("/api/v1/staff-loans", get(staff_loans::handler
+          +s::get_staff_loans))                                          
+      314 +        .route("/api/v1/staff-loans/{id}", get(staff_loans::ha
+          +ndlers::get_staff_loan))                                      
+      315 +        .route("/api/v1/staff-loans/{id}", put(staff_loans::ha
+          +ndlers::update_staff_loan))                                   
+      316 +        .route("/api/v1/staff-loans/{id}", delete(staff_loans:
+          +:handlers::delete_staff_loan))                                
+      317 +        // Staff loan deduction routes                        
+      318 +        .route("/api/v1/staff-loan-deductions", post(staff_loa
+          +n_deductions::handlers::create_staff_loan_deduction))         
+      319 +        .route("/api/v1/staff-loan-deductions", get(staff_loan
+          +_deductions::handlers::get_staff_loan_deductions))            
+      320 +        .route("/api/v1/staff-loan-deductions/{id}", get(staff
+          +_loan_deductions::handlers::get_staff_loan_deduction))        
+      321 +        .route("/api/v1/staff-loan-deductions/{id}", put(staff
+          +_loan_deductions::handlers::update_staff_loan_deduction))     
+      322 +        .route("/api/v1/staff-loan-deductions/{id}", delete(st
+          +aff_loan_deductions::handlers::delete_staff_loan_deduction))  
+      323  
+      324          .layer(middleware::from_fn_with_state(
+      325              state.clone(),
+
+● Now running cargo check to verify compilation.
+
+● Bash(cd /home/sayyed/rsEdu/backend && cargo check 2>&1)
+  ⎿      Checking backend v0.1.0 (/home/sayyed/rsEdu/backend)
+     warning: unused import: `super::academic_years::Entity as AcademicYear
+     s`
+     … +224 lines (ctrl+o to expand)
+  ⎿  (timeout 2m)
+
+● Compilation successful — only warnings, no errors. The warnings are
+  pre-existing unused imports in prelude.rs (from regenerated entities) and
+  unused imports I can clean up in the handlers.
+
+  Let me quickly clean up the unused imports in the three handlers that
+  triggered warnings:
+
+● Update(src/salary_structure_components/handlers.rs)
+  ⎿  Added 1 line, removed 1 line
+      3      http::StatusCode,
+      4      Json,
+      5  };
+      6 -use sea_orm::{ActiveModelTrait, ActiveValue, ColumnTrait, Entity
+        -Trait, QueryFilter};                                            
+      6 +use sea_orm::{ActiveModelTrait, ActiveValue, EntityTrait};      
+      7  use chrono::Utc;
+      8  
+      9  use crate::{
+
+● Update(src/staff_monthly_salary_details/handlers.rs)
+  ⎿  Added 1 line, removed 1 line
+      3      http::StatusCode,
+      4      Json,
+      5  };
+      6 -use sea_orm::{ActiveModelTrait, ActiveValue, ColumnTrait, Entity
+        -Trait, QueryFilter};                                            
+      6 +use sea_orm::{ActiveModelTrait, ActiveValue, EntityTrait};      
+      7  use chrono::Utc;
+      8  
+      9  use crate::{
+● Update(src/salary_increments/handlers.rs)
+  ⎿  Added 1 line, removed 1 line
+      3      http::StatusCode,
+      4      Json,
+      5  };
+      6 -use sea_orm::{ActiveModelTrait, ActiveValue, ColumnTrait, Entity
+        -Trait, QueryFilter};                                            
+      6 +use sea_orm::{ActiveModelTrait, ActiveValue, EntityTrait};      
+      7  use chrono::{NaiveDate, Utc};
+      8  
+      9  use crate::{
+
+● Bash(cargo check 2>&1 | grep -E "^error|Finished")
+  ⎿      Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.39
+     s
+
+● Zero errors. All done.
+
+  Here's a summary of everything that was completed:
+
+  Step 1 — Migrations generated: 13 migration files created via sea-orm-cli 
+  migrate generate
+
+  Step 2 — Migration content written: All 13 migrations fully implemented with
+  correct columns, types, and foreign keys (Restrict/Cascade as specified)
+
+  Step 3 — Migrations applied: All 13 tables created in the database
+  successfully
+
+  Step 4 — Entities generated: sea-orm-cli generate entity regenerated all
+  entities including the 13 new ones
+
+  Step 5 — CRUD modules created: All 13 modules with mod.rs, dto.rs, and
+  handlers.rs:
+  - allowance_deduction_types, salary_structures, salary_structure_components
+  - staff_salaries, staff_salary_allowances
+  - staff_monthly_salaries, staff_monthly_salary_details
+  - salary_increments, salary_payments
+  - leave_types, staff_leaves, staff_loans, staff_loan_deductions
+
+  Step 6 — main.rs updated: 13 module declarations + 65 new routes added
+
+  Step 7 — cargo check passes: Zero errors (only pre-existing warnings from the
+  auto-generated prelude.rs)
+
+✻ Crunched for 7m 51s

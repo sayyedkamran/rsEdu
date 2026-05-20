@@ -49,8 +49,18 @@ pub enum Relation {
     Organizations,
     #[sea_orm(has_many = "super::results::Entity")]
     Results,
+    #[sea_orm(has_many = "super::salary_increments::Entity")]
+    SalaryIncrements,
+    #[sea_orm(has_many = "super::salary_payments::Entity")]
+    SalaryPayments,
     #[sea_orm(has_many = "super::staff::Entity")]
     Staff,
+    #[sea_orm(has_many = "super::staff_leaves::Entity")]
+    StaffLeaves,
+    #[sea_orm(has_many = "super::staff_loans::Entity")]
+    StaffLoans,
+    #[sea_orm(has_many = "super::staff_salaries::Entity")]
+    StaffSalaries,
     #[sea_orm(has_many = "super::students::Entity")]
     Students,
     #[sea_orm(has_many = "super::user_roles::Entity")]
@@ -105,9 +115,39 @@ impl Related<super::results::Entity> for Entity {
     }
 }
 
+impl Related<super::salary_increments::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::SalaryIncrements.def()
+    }
+}
+
+impl Related<super::salary_payments::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::SalaryPayments.def()
+    }
+}
+
 impl Related<super::staff::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Staff.def()
+    }
+}
+
+impl Related<super::staff_leaves::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::StaffLeaves.def()
+    }
+}
+
+impl Related<super::staff_loans::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::StaffLoans.def()
+    }
+}
+
+impl Related<super::staff_salaries::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::StaffSalaries.def()
     }
 }
 

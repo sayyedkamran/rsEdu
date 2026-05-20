@@ -38,6 +38,8 @@ pub enum Relation {
         on_delete = "Restrict"
     )]
     Organizations,
+    #[sea_orm(has_many = "super::staff_monthly_salaries::Entity")]
+    StaffMonthlySalaries,
     #[sea_orm(
         belongs_to = "super::streams::Entity",
         from = "Column::StreamId",
@@ -85,6 +87,12 @@ impl Related<super::fee_structures::Entity> for Entity {
 impl Related<super::organizations::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Organizations.def()
+    }
+}
+
+impl Related<super::staff_monthly_salaries::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::StaffMonthlySalaries.def()
     }
 }
 

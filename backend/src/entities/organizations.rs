@@ -24,6 +24,8 @@ pub struct Model {
 pub enum Relation {
     #[sea_orm(has_many = "super::academic_years::Entity")]
     AcademicYears,
+    #[sea_orm(has_many = "super::allowance_deduction_types::Entity")]
+    AllowanceDeductionTypes,
     #[sea_orm(has_many = "super::audit_logs::Entity")]
     AuditLogs,
     #[sea_orm(has_many = "super::branches::Entity")]
@@ -46,6 +48,8 @@ pub enum Relation {
     FeeStructures,
     #[sea_orm(has_many = "super::fee_types::Entity")]
     FeeTypes,
+    #[sea_orm(has_many = "super::leave_types::Entity")]
+    LeaveTypes,
     #[sea_orm(has_many = "super::master_classes::Entity")]
     MasterClasses,
     #[sea_orm(has_many = "super::master_sections::Entity")]
@@ -58,6 +62,8 @@ pub enum Relation {
     Permissions,
     #[sea_orm(has_many = "super::roles::Entity")]
     Roles,
+    #[sea_orm(has_many = "super::salary_structures::Entity")]
+    SalaryStructures,
     #[sea_orm(has_many = "super::scholarships::Entity")]
     Scholarships,
     #[sea_orm(has_many = "super::staff::Entity")]
@@ -79,6 +85,12 @@ pub enum Relation {
 impl Related<super::academic_years::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::AcademicYears.def()
+    }
+}
+
+impl Related<super::allowance_deduction_types::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::AllowanceDeductionTypes.def()
     }
 }
 
@@ -130,6 +142,12 @@ impl Related<super::fee_types::Entity> for Entity {
     }
 }
 
+impl Related<super::leave_types::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::LeaveTypes.def()
+    }
+}
+
 impl Related<super::master_classes::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::MasterClasses.def()
@@ -163,6 +181,12 @@ impl Related<super::permissions::Entity> for Entity {
 impl Related<super::roles::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Roles.def()
+    }
+}
+
+impl Related<super::salary_structures::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::SalaryStructures.def()
     }
 }
 

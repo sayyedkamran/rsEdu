@@ -47,6 +47,21 @@ mod m20260517_110053_create_student_scholarships_table;
 mod m20260517_110151_create_fee_bills_table;
 mod m20260517_110303_create_fee_payments_table;
 mod m20260517_110407_create_fee_arrears_table;
+mod m20260520_150443_create_allowance_deduction_types_table;
+mod m20260520_150443_create_salary_structures_table;
+mod m20260520_150443_create_salary_structure_components_table;
+mod m20260520_150443_create_staff_salaries_table;
+mod m20260520_150443_create_staff_salary_allowances_table;
+mod m20260520_150443_create_staff_monthly_salaries_table;
+mod m20260520_150443_create_staff_monthly_salary_details_table;
+mod m20260520_150443_create_salary_increments_table;
+mod m20260520_150443_create_salary_payments_table;
+mod m20260520_150443_create_leave_types_table;
+mod m20260520_150443_create_staff_leaves_table;
+mod m20260520_150443_create_staff_loans_table;
+mod m20260520_150443_create_staff_loan_deductions_table;
+mod m20260520_150956_create_expense_categories_table;
+mod m20260520_151228_create_expenses_table;
 
 pub struct Migrator;
 
@@ -101,6 +116,21 @@ impl MigratorTrait for Migrator {
             Box::new(m20260517_110151_create_fee_bills_table::Migration),
             Box::new(m20260517_110303_create_fee_payments_table::Migration),
             Box::new(m20260517_110407_create_fee_arrears_table::Migration),
+            Box::new(m20260520_150443_create_allowance_deduction_types_table::Migration),
+            Box::new(m20260520_150443_create_salary_structures_table::Migration),
+            Box::new(m20260520_150443_create_salary_structure_components_table::Migration),
+            Box::new(m20260520_150443_create_staff_salaries_table::Migration),
+            Box::new(m20260520_150443_create_staff_salary_allowances_table::Migration),
+            Box::new(m20260520_150443_create_staff_monthly_salaries_table::Migration),
+            Box::new(m20260520_150443_create_staff_monthly_salary_details_table::Migration),
+            Box::new(m20260520_150443_create_salary_increments_table::Migration),
+            Box::new(m20260520_150443_create_salary_payments_table::Migration),
+            Box::new(m20260520_150443_create_leave_types_table::Migration),
+            Box::new(m20260520_150443_create_staff_leaves_table::Migration),
+            Box::new(m20260520_150443_create_staff_loans_table::Migration),
+            Box::new(m20260520_150443_create_staff_loan_deductions_table::Migration),
+            Box::new(m20260520_150956_create_expense_categories_table::Migration),
+            Box::new(m20260520_151228_create_expenses_table::Migration),
         ]
     }
 }

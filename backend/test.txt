@@ -1,0 +1,17 @@
+1. There shold be a salary structure for each and every orgnizaiton, in case there is a salary structure of a branch, it will override the salary structure of the orgnization. 
+
+2. There will be a table of salary structure like Fixed Pay-I, Fixed Pay-2, Teachin Staff Pkg-1 etc etc. This will also have the same org and branch id with overriding rules.
+
+3. There will be a standard table for allownces and deduciton. It will be linked with the salary strucute.  orgnizaiton level as well as brach level with the same overriding rules. Allownces will have field like one time, recuring, recurring frequency. 
+
+4. Than there will be staff_salary, it will have staff_id, slaary Sturcute_Id, start date etc.  
+
+5. Than there will be another table staff_salary_standard_allownces, that will  have staff_salary_id and allownces_ID and its amount etc. This will be the standard salary of the emplloyee. 
+
+6. Than there will be a table having staff_monthly_Salary, it will have the hidder informaiton like staff_id, Salary_month, salary_year, payment_date etc. 
+
+7. There will be another table staff_Monthly_salary_details, it will have the id from staff_monthly_salary with all the standard allownces, decutions and any allownce/deductions that is specific for that month. 
+
+8. There will be a mechanisim to increate the amount of base salary, yearly, on promotion or any other time as well as the amount of the standard allownces.
+
+9. Anything else that you want to add
