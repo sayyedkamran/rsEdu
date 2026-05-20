@@ -50,6 +50,8 @@ pub enum Relation {
     Streams,
     #[sea_orm(has_many = "super::student_discounts::Entity")]
     StudentDiscounts,
+    #[sea_orm(has_many = "super::student_enrollments::Entity")]
+    StudentEnrollments,
     #[sea_orm(has_many = "super::student_scholarships::Entity")]
     StudentScholarships,
 }
@@ -105,6 +107,12 @@ impl Related<super::streams::Entity> for Entity {
 impl Related<super::student_discounts::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::StudentDiscounts.def()
+    }
+}
+
+impl Related<super::student_enrollments::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::StudentEnrollments.def()
     }
 }
 

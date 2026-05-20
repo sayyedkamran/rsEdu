@@ -61,6 +61,8 @@ pub enum Relation {
     StaffLoans,
     #[sea_orm(has_many = "super::staff_salaries::Entity")]
     StaffSalaries,
+    #[sea_orm(has_many = "super::student_enrollments::Entity")]
+    StudentEnrollments,
     #[sea_orm(has_many = "super::students::Entity")]
     Students,
     #[sea_orm(has_many = "super::user_roles::Entity")]
@@ -148,6 +150,12 @@ impl Related<super::staff_loans::Entity> for Entity {
 impl Related<super::staff_salaries::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::StaffSalaries.def()
+    }
+}
+
+impl Related<super::student_enrollments::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::StudentEnrollments.def()
     }
 }
 

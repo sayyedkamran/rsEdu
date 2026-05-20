@@ -3,14 +3,13 @@
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
-#[sea_orm(table_name = "payment_methods")]
+#[sea_orm(table_name = "expense_categories")]
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
     pub organization_id: i32,
     pub name: String,
     pub name_urdu: Option<String>,
-    pub requires_reference: bool,
     pub description: Option<String>,
     pub is_active: bool,
     pub created_at: DateTimeWithTimeZone,
@@ -21,8 +20,6 @@ pub struct Model {
 pub enum Relation {
     #[sea_orm(has_many = "super::expenses::Entity")]
     Expenses,
-    #[sea_orm(has_many = "super::fee_payments::Entity")]
-    FeePayments,
     #[sea_orm(
         belongs_to = "super::organizations::Entity",
         from = "Column::OrganizationId",
@@ -31,10 +28,6 @@ pub enum Relation {
         on_delete = "Restrict"
     )]
     Organizations,
-    #[sea_orm(has_many = "super::salary_payments::Entity")]
-    SalaryPayments,
-    #[sea_orm(has_many = "super::staff_monthly_salaries::Entity")]
-    StaffMonthlySalaries,
 }
 
 impl Related<super::expenses::Entity> for Entity {
@@ -43,27 +36,9 @@ impl Related<super::expenses::Entity> for Entity {
     }
 }
 
-impl Related<super::fee_payments::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::FeePayments.def()
-    }
-}
-
 impl Related<super::organizations::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Organizations.def()
-    }
-}
-
-impl Related<super::salary_payments::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::SalaryPayments.def()
-    }
-}
-
-impl Related<super::staff_monthly_salaries::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::StaffMonthlySalaries.def()
     }
 }
 

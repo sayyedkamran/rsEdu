@@ -44,6 +44,8 @@ pub enum Relation {
     Discounts,
     #[sea_orm(has_many = "super::exam_types::Entity")]
     ExamTypes,
+    #[sea_orm(has_many = "super::expense_categories::Entity")]
+    ExpenseCategories,
     #[sea_orm(has_many = "super::fee_structures::Entity")]
     FeeStructures,
     #[sea_orm(has_many = "super::fee_types::Entity")]
@@ -127,6 +129,12 @@ impl Related<super::discounts::Entity> for Entity {
 impl Related<super::exam_types::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::ExamTypes.def()
+    }
+}
+
+impl Related<super::expense_categories::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::ExpenseCategories.def()
     }
 }
 

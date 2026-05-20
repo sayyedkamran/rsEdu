@@ -66,6 +66,8 @@ pub enum Relation {
         on_delete = "SetNull"
     )]
     Staff,
+    #[sea_orm(has_many = "super::student_enrollments::Entity")]
+    StudentEnrollments,
 }
 
 impl Related<super::academic_years::Entity> for Entity {
@@ -113,6 +115,12 @@ impl Related<super::master_sections::Entity> for Entity {
 impl Related<super::staff::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Staff.def()
+    }
+}
+
+impl Related<super::student_enrollments::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::StudentEnrollments.def()
     }
 }
 

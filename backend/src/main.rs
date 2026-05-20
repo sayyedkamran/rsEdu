@@ -49,6 +49,23 @@ mod leave_types;
 mod staff_leaves;
 mod staff_loans;
 mod staff_loan_deductions;
+mod expense_categories;
+mod expenses;
+mod student_enrollments;
+mod roles;
+mod permissions;
+mod student_discounts;
+mod student_scholarships;
+mod fee_arrears;
+mod addresses;
+mod contacts;
+mod student_guardians;
+mod class_subjects;
+mod branch_contacts;
+mod organization_settings;
+mod branch_class_levels;
+mod class_progressions;
+mod audit_logs;
 
 #[derive(Clone)]
 pub struct AppState {
@@ -320,6 +337,105 @@ async fn main() {
         .route("/api/v1/staff-loan-deductions/{id}", get(staff_loan_deductions::handlers::get_staff_loan_deduction))
         .route("/api/v1/staff-loan-deductions/{id}", put(staff_loan_deductions::handlers::update_staff_loan_deduction))
         .route("/api/v1/staff-loan-deductions/{id}", delete(staff_loan_deductions::handlers::delete_staff_loan_deduction))
+        // Expense category routes
+        .route("/api/v1/expense-categories", post(expense_categories::handlers::create_expense_category))
+        .route("/api/v1/expense-categories", get(expense_categories::handlers::get_expense_categories))
+        .route("/api/v1/expense-categories/{id}", get(expense_categories::handlers::get_expense_category))
+        .route("/api/v1/expense-categories/{id}", put(expense_categories::handlers::update_expense_category))
+        .route("/api/v1/expense-categories/{id}", delete(expense_categories::handlers::delete_expense_category))
+        // Expense routes
+        .route("/api/v1/expenses", post(expenses::handlers::create_expense))
+        .route("/api/v1/expenses", get(expenses::handlers::get_expenses))
+        .route("/api/v1/expenses/{id}", get(expenses::handlers::get_expense))
+        .route("/api/v1/expenses/{id}", put(expenses::handlers::update_expense))
+        .route("/api/v1/expenses/{id}", delete(expenses::handlers::delete_expense))
+        // Student enrollment routes
+        .route("/api/v1/student-enrollments", post(student_enrollments::handlers::create_student_enrollment))
+        .route("/api/v1/student-enrollments", get(student_enrollments::handlers::get_student_enrollments))
+        .route("/api/v1/student-enrollments/{id}", get(student_enrollments::handlers::get_student_enrollment))
+        .route("/api/v1/student-enrollments/{id}", put(student_enrollments::handlers::update_student_enrollment))
+        .route("/api/v1/student-enrollments/{id}", delete(student_enrollments::handlers::delete_student_enrollment))
+        // Role routes
+        .route("/api/v1/roles", post(roles::handlers::create_role))
+        .route("/api/v1/roles", get(roles::handlers::get_roles))
+        .route("/api/v1/roles/{id}", get(roles::handlers::get_role))
+        .route("/api/v1/roles/{id}", put(roles::handlers::update_role))
+        .route("/api/v1/roles/{id}", delete(roles::handlers::delete_role))
+        // Permission routes
+        .route("/api/v1/permissions", post(permissions::handlers::create_permission))
+        .route("/api/v1/permissions", get(permissions::handlers::get_permissions))
+        .route("/api/v1/permissions/{id}", get(permissions::handlers::get_permission))
+        .route("/api/v1/permissions/{id}", put(permissions::handlers::update_permission))
+        .route("/api/v1/permissions/{id}", delete(permissions::handlers::delete_permission))
+        // Student discount routes
+        .route("/api/v1/student-discounts", post(student_discounts::handlers::create_student_discount))
+        .route("/api/v1/student-discounts", get(student_discounts::handlers::get_student_discounts))
+        .route("/api/v1/student-discounts/{id}", get(student_discounts::handlers::get_student_discount))
+        .route("/api/v1/student-discounts/{id}", put(student_discounts::handlers::update_student_discount))
+        .route("/api/v1/student-discounts/{id}", delete(student_discounts::handlers::delete_student_discount))
+        // Student scholarship routes
+        .route("/api/v1/student-scholarships", post(student_scholarships::handlers::create_student_scholarship))
+        .route("/api/v1/student-scholarships", get(student_scholarships::handlers::get_student_scholarships))
+        .route("/api/v1/student-scholarships/{id}", get(student_scholarships::handlers::get_student_scholarship))
+        .route("/api/v1/student-scholarships/{id}", put(student_scholarships::handlers::update_student_scholarship))
+        .route("/api/v1/student-scholarships/{id}", delete(student_scholarships::handlers::delete_student_scholarship))
+        // Fee arrear routes
+        .route("/api/v1/fee-arrears", post(fee_arrears::handlers::create_fee_arrear))
+        .route("/api/v1/fee-arrears", get(fee_arrears::handlers::get_fee_arrears))
+        .route("/api/v1/fee-arrears/{id}", get(fee_arrears::handlers::get_fee_arrear))
+        .route("/api/v1/fee-arrears/{id}", put(fee_arrears::handlers::update_fee_arrear))
+        .route("/api/v1/fee-arrears/{id}", delete(fee_arrears::handlers::delete_fee_arrear))
+        // Address routes
+        .route("/api/v1/addresses", post(addresses::handlers::create_address))
+        .route("/api/v1/addresses", get(addresses::handlers::get_addresses))
+        .route("/api/v1/addresses/{id}", get(addresses::handlers::get_address))
+        .route("/api/v1/addresses/{id}", put(addresses::handlers::update_address))
+        .route("/api/v1/addresses/{id}", delete(addresses::handlers::delete_address))
+        // Contact routes
+        .route("/api/v1/contacts", post(contacts::handlers::create_contact))
+        .route("/api/v1/contacts", get(contacts::handlers::get_contacts))
+        .route("/api/v1/contacts/{id}", get(contacts::handlers::get_contact))
+        .route("/api/v1/contacts/{id}", put(contacts::handlers::update_contact))
+        .route("/api/v1/contacts/{id}", delete(contacts::handlers::delete_contact))
+        // Student guardian routes
+        .route("/api/v1/student-guardians", post(student_guardians::handlers::create_student_guardian))
+        .route("/api/v1/student-guardians", get(student_guardians::handlers::get_student_guardians))
+        .route("/api/v1/student-guardians/{id}", get(student_guardians::handlers::get_student_guardian))
+        .route("/api/v1/student-guardians/{id}", put(student_guardians::handlers::update_student_guardian))
+        .route("/api/v1/student-guardians/{id}", delete(student_guardians::handlers::delete_student_guardian))
+        // Class subject routes
+        .route("/api/v1/class-subjects", post(class_subjects::handlers::create_class_subject))
+        .route("/api/v1/class-subjects", get(class_subjects::handlers::get_class_subjects))
+        .route("/api/v1/class-subjects/{id}", get(class_subjects::handlers::get_class_subject))
+        .route("/api/v1/class-subjects/{id}", put(class_subjects::handlers::update_class_subject))
+        .route("/api/v1/class-subjects/{id}", delete(class_subjects::handlers::delete_class_subject))
+        // Branch contact routes
+        .route("/api/v1/branch-contacts", post(branch_contacts::handlers::create_branch_contact))
+        .route("/api/v1/branch-contacts", get(branch_contacts::handlers::get_branch_contacts))
+        .route("/api/v1/branch-contacts/{id}", get(branch_contacts::handlers::get_branch_contact))
+        .route("/api/v1/branch-contacts/{id}", put(branch_contacts::handlers::update_branch_contact))
+        .route("/api/v1/branch-contacts/{id}", delete(branch_contacts::handlers::delete_branch_contact))
+        // Organization setting routes
+        .route("/api/v1/organization-settings", post(organization_settings::handlers::create_organization_setting))
+        .route("/api/v1/organization-settings", get(organization_settings::handlers::get_organization_settings))
+        .route("/api/v1/organization-settings/{id}", get(organization_settings::handlers::get_organization_setting))
+        .route("/api/v1/organization-settings/{id}", put(organization_settings::handlers::update_organization_setting))
+        .route("/api/v1/organization-settings/{id}", delete(organization_settings::handlers::delete_organization_setting))
+        // Branch class level routes
+        .route("/api/v1/branch-class-levels", post(branch_class_levels::handlers::create_branch_class_level))
+        .route("/api/v1/branch-class-levels", get(branch_class_levels::handlers::get_branch_class_levels))
+        .route("/api/v1/branch-class-levels/{id}", get(branch_class_levels::handlers::get_branch_class_level))
+        .route("/api/v1/branch-class-levels/{id}", put(branch_class_levels::handlers::update_branch_class_level))
+        .route("/api/v1/branch-class-levels/{id}", delete(branch_class_levels::handlers::delete_branch_class_level))
+        // Class progression routes
+        .route("/api/v1/class-progressions", post(class_progressions::handlers::create_class_progression))
+        .route("/api/v1/class-progressions", get(class_progressions::handlers::get_class_progressions))
+        .route("/api/v1/class-progressions/{id}", get(class_progressions::handlers::get_class_progression))
+        .route("/api/v1/class-progressions/{id}", put(class_progressions::handlers::update_class_progression))
+        .route("/api/v1/class-progressions/{id}", delete(class_progressions::handlers::delete_class_progression))
+        // Audit log routes (read only)
+        .route("/api/v1/audit-logs", get(audit_logs::handlers::get_audit_logs))
+        .route("/api/v1/audit-logs/{id}", get(audit_logs::handlers::get_audit_log))
 
         .layer(middleware::from_fn_with_state(
             state.clone(),

@@ -62,6 +62,7 @@ mod m20260520_150443_create_staff_loans_table;
 mod m20260520_150443_create_staff_loan_deductions_table;
 mod m20260520_150956_create_expense_categories_table;
 mod m20260520_151228_create_expenses_table;
+mod m20260520_202449_create_student_enrollments_table;
 
 pub struct Migrator;
 
@@ -131,6 +132,7 @@ impl MigratorTrait for Migrator {
             Box::new(m20260520_150443_create_staff_loan_deductions_table::Migration),
             Box::new(m20260520_150956_create_expense_categories_table::Migration),
             Box::new(m20260520_151228_create_expenses_table::Migration),
+            Box::new(m20260520_202449_create_student_enrollments_table::Migration),
         ]
     }
 }
