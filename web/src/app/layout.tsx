@@ -1,11 +1,7 @@
-'use client';
-
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
-import { QueryClientProvider } from '@tanstack/react-query';
-import { queryClient } from '@/lib/query-client';
-import { Toaster } from '@/components/ui/sonner';
+import { Providers } from '@/components/providers';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -17,6 +13,11 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
+export const metadata: Metadata = {
+  title: 'rsEdu - School Management System',
+  description: 'School Management System for Pakistani Schools',
+};
+
 export default function RootLayout({
   children,
 }: {
@@ -25,10 +26,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <QueryClientProvider client={queryClient}>
+        <Providers>
           {children}
-          <Toaster />
-        </QueryClientProvider>
+        </Providers>
       </body>
     </html>
   );

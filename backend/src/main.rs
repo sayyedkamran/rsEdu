@@ -3,6 +3,8 @@ use sea_orm::DatabaseConnection;
 use std::sync::Arc;
 use tokio::net::TcpListener;
 use tracing::info;
+use tower_http::cors::{CorsLayer, Any};
+use axum::http::Method;
 
 mod auth;
 mod config;
@@ -442,10 +444,16 @@ async fn main() {
             auth::middleware::auth_middleware,
         ));
 
+    let cors = CorsLayer::new()
+        .allow_origin(Any)
+        .allow_methods([Method::GET, Method::POST, Method::PUT, Method::DELETE])
+        .allow_headers(Any);
+
     let app = Router::new()
         .merge(public_routes)
         .merge(protected_routes)
-        .with_state(state);
+        .with_state(state)
+        .layer(cors);
 
     let listener = TcpListener::bind("0.0.0.0:3000").await.unwrap();
     info!("Server running on http://0.0.0.0:3000");

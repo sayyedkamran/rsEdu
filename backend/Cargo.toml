@@ -35,3 +35,5 @@ chrono = { version = "0.4.44", features = ["serde"] }
 
 # Password hashing
 argon2 = "0.5.3"
+
+tower-http = { version = "0.6", features = ["cors"] }
