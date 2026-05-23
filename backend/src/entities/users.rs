@@ -17,6 +17,7 @@ pub struct Model {
     pub is_active: bool,
     pub created_at: DateTimeWithTimeZone,
     pub updated_at: DateTimeWithTimeZone,
+    pub profile_picture_path: Option<String>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

@@ -63,6 +63,8 @@ mod m20260520_150443_create_staff_loan_deductions_table;
 mod m20260520_150956_create_expense_categories_table;
 mod m20260520_151228_create_expenses_table;
 mod m20260520_202449_create_student_enrollments_table;
+mod m20260523_174614_add_profile_picture_to_users;
+mod m20260523_175507_rename_logo_url_to_logo_path_in_organizations;
 
 pub struct Migrator;
 
@@ -133,6 +135,8 @@ impl MigratorTrait for Migrator {
             Box::new(m20260520_150956_create_expense_categories_table::Migration),
             Box::new(m20260520_151228_create_expenses_table::Migration),
             Box::new(m20260520_202449_create_student_enrollments_table::Migration),
+            Box::new(m20260523_174614_add_profile_picture_to_users::Migration),
+            Box::new(m20260523_175507_rename_logo_url_to_logo_path_in_organizations::Migration),
         ]
     }
 }

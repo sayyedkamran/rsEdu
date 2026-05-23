@@ -6,6 +6,8 @@ edition = "2024"
 [dependencies]
 # Web framework
 axum = "0.8.9"
+axum-extra = { version = "0.10", features = ["multipart"] }
+tower-http = { version = "0.6", features = ["cors", "fs"] }
 
 # Async runtime
 tokio = { version = "1.52.2", features = ["full"] }
@@ -36,7 +38,7 @@ chrono = { version = "0.4.44", features = ["serde"] }
 # Password hashing
 argon2 = "0.5.3"
 
-tower-http = { version = "0.6", features = ["cors"] }
+
 
 # Storage - S3 compatible (AWS S3, Cloudflare R2, MinIO)
 aws-sdk-s3 = "1.0"
@@ -51,3 +53,4 @@ multer = "3.0"
 
 # Async traits
 async-trait = "0.1"
+

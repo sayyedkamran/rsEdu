@@ -6,6 +6,7 @@ use tracing::info;
 use tower_http::cors::{CorsLayer, Any};
 use axum::http::Method;
 use storage::StorageBackend;
+use tower_http::services::ServeDir;
 
 mod auth;
 mod config;
@@ -70,6 +71,7 @@ mod branch_class_levels;
 mod class_progressions;
 mod audit_logs;
 mod storage;
+mod upload;
 
 #[derive(Clone)]
 pub struct AppState {
@@ -447,6 +449,9 @@ async fn main() {
         // Audit log routes (read only)
         .route("/api/v1/audit-logs", get(audit_logs::handlers::get_audit_logs))
         .route("/api/v1/audit-logs/{id}", get(audit_logs::handlers::get_audit_log))
+        // Upload routes
+        .route("/api/v1/upload/logo", post(upload::handlers::upload_logo))
+        .route("/api/v1/upload/profile-picture", post(upload::handlers::upload_profile_picture))
 
         .layer(middleware::from_fn_with_state(
             state.clone(),
@@ -457,12 +462,13 @@ async fn main() {
         .allow_origin(Any)
         .allow_methods([Method::GET, Method::POST, Method::PUT, Method::DELETE])
         .allow_headers(Any);
-
+    
     let app = Router::new()
-        .merge(public_routes)
-        .merge(protected_routes)
-        .with_state(state)
-        .layer(cors);
+    .merge(public_routes)
+    .merge(protected_routes)
+    .nest_service("/uploads", ServeDir::new("uploads"))
+    .with_state(state)
+    .layer(cors);
 
     let listener = TcpListener::bind("0.0.0.0:3000").await.unwrap();
     info!("Server running on http://0.0.0.0:3000");

@@ -18,7 +18,7 @@ fn to_response(org: organizations::Model) -> OrganizationResponse {
         id: org.id,
         name: org.name,
         name_urdu: org.name_urdu,
-        logo_url: org.logo_url,
+        logo_path: org.logo_path,
         website: org.website,
         email: org.email,
         phone: org.phone,
@@ -39,7 +39,7 @@ pub async fn create_organization(
     let new_org = ActiveModel {
         name: ActiveValue::Set(payload.name),
         name_urdu: ActiveValue::Set(payload.name_urdu),
-        logo_url: ActiveValue::Set(payload.logo_url),
+        logo_path: ActiveValue::Set(payload.logo_path),
         website: ActiveValue::Set(payload.website),
         email: ActiveValue::Set(payload.email),
         phone: ActiveValue::Set(payload.phone),
@@ -114,8 +114,8 @@ pub async fn update_organization(
     if let Some(name_urdu) = payload.name_urdu {
         active_model.name_urdu = ActiveValue::Set(Some(name_urdu));
     }
-    if let Some(logo_url) = payload.logo_url {
-        active_model.logo_url = ActiveValue::Set(Some(logo_url));
+    if let Some(logo_path) = payload.logo_path {
+    active_model.logo_path = ActiveValue::Set(Some(logo_path));
     }
     if let Some(website) = payload.website {
         active_model.website = ActiveValue::Set(Some(website));

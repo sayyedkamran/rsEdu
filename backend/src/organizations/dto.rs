@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 pub struct CreateOrganizationRequest {
     pub name: String,
     pub name_urdu: Option<String>,
-    pub logo_url: Option<String>,
+    pub logo_path: Option<String>,
     pub website: Option<String>,
     pub email: Option<String>,
     pub phone: Option<String>,
@@ -16,7 +16,7 @@ pub struct CreateOrganizationRequest {
 pub struct UpdateOrganizationRequest {
     pub name: Option<String>,
     pub name_urdu: Option<String>,
-    pub logo_url: Option<String>,
+    pub logo_path: Option<String>,
     pub website: Option<String>,
     pub email: Option<String>,
     pub phone: Option<String>,
@@ -30,7 +30,7 @@ pub struct OrganizationResponse {
     pub id: i32,
     pub name: String,
     pub name_urdu: Option<String>,
-    pub logo_url: Option<String>,
+    pub logo_path: Option<String>,
     pub website: Option<String>,
     pub email: Option<String>,
     pub phone: Option<String>,
