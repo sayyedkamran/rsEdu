@@ -37,3 +37,17 @@ chrono = { version = "0.4.44", features = ["serde"] }
 argon2 = "0.5.3"
 
 tower-http = { version = "0.6", features = ["cors"] }
+
+# Storage - S3 compatible (AWS S3, Cloudflare R2, MinIO)
+aws-sdk-s3 = "1.0"
+aws-config = "1.0"
+
+# Google Cloud Storage
+google-cloud-storage = "0.20"
+
+# File handling
+mime_guess = "2.0"
+multer = "3.0"
+
+# Async traits
+async-trait = "0.1"

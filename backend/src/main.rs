@@ -5,6 +5,7 @@ use tokio::net::TcpListener;
 use tracing::info;
 use tower_http::cors::{CorsLayer, Any};
 use axum::http::Method;
+use storage::StorageBackend;
 
 mod auth;
 mod config;
@@ -68,11 +69,13 @@ mod organization_settings;
 mod branch_class_levels;
 mod class_progressions;
 mod audit_logs;
+mod storage;
 
 #[derive(Clone)]
 pub struct AppState {
     pub db: Arc<DatabaseConnection>,
     pub jwt_secret: String,
+    pub storage: Arc<dyn storage::StorageBackend>,
 }
 
 #[tokio::main]
@@ -82,9 +85,15 @@ async fn main() {
     let config = config::Config::from_env();
 
     let db = database::connect(&config.database_url).await;
+
+    // Initialize storage
+    let storage_config = storage::StorageConfig::from_env();
+    let storage = storage::factory::create_storage(&storage_config).await;
+
     let state = AppState {
         db: Arc::new(db),
         jwt_secret: config.jwt_secret,
+        storage,
     };
 
     let public_routes = Router::new()
