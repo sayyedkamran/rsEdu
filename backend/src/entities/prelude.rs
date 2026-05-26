@@ -60,5 +60,6 @@ pub use super::student_scholarships::Entity as StudentScholarships;
 pub use super::students::Entity as Students;
 pub use super::subjects::Entity as Subjects;
 pub use super::transfers::Entity as Transfers;
+pub use super::user_permissions::Entity as UserPermissions;
 pub use super::user_roles::Entity as UserRoles;
 pub use super::users::Entity as Users;

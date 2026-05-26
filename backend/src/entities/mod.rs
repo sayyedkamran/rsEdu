@@ -62,5 +62,6 @@ pub mod student_scholarships;
 pub mod students;
 pub mod subjects;
 pub mod transfers;
+pub mod user_permissions;
 pub mod user_roles;
 pub mod users;
