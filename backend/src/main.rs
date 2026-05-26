@@ -72,6 +72,8 @@ mod class_progressions;
 mod audit_logs;
 mod storage;
 mod upload;
+mod users;
+
 
 #[derive(Clone)]
 pub struct AppState {
@@ -452,6 +454,11 @@ async fn main() {
         // Upload routes
         .route("/api/v1/upload/logo", post(upload::handlers::upload_logo))
         .route("/api/v1/upload/profile-picture", post(upload::handlers::upload_profile_picture))
+        // User profile routes
+        .route("/api/v1/users/me", get(users::handlers::get_profile))
+        .route("/api/v1/users/me", put(users::handlers::update_profile))
+        .route("/api/v1/users/me/password", put(users::handlers::change_password))
+        .route("/api/v1/users/me/profile-picture", put(users::handlers::update_profile_picture))
 
         .layer(middleware::from_fn_with_state(
             state.clone(),
