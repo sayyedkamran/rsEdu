@@ -1,103 +1,73 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
-import { api } from '@/lib/api';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { GraduationCap, Users, School, DollarSign } from 'lucide-react';
-import { Skeleton } from '@/components/ui/skeleton';
+import { useAuthStore } from '@/store/auth';
+import { SysAdminDashboard } from '@/components/dashboards/SysAdminDashboard';
+import { OrgDashboard } from '@/components/dashboards/OrgDashboard';
+import { SchoolDashboard } from '@/components/dashboards/SchoolDashboard';
+import { AccountsDashboard } from '@/components/dashboards/AccountsDashboard';
+import { TeacherDashboard } from '@/components/dashboards/TeacherDashboard';
+import { GuardianDashboard } from '@/components/dashboards/GuardianDashboard';
+import { GuestDashboard } from '@/components/dashboards/GuestDashboard';
 
 export default function DashboardPage() {
-  const { data: students, isLoading: loadingStudents } = useQuery({
-    queryKey: ['students'],
-    queryFn: async () => {
-      const response = await api.get('/api/v1/students');
-      return response.data;
-    },
-  });
+  const { user } = useAuthStore();
+  const role = user?.role ?? '';
 
-  const { data: staff, isLoading: loadingStaff } = useQuery({
-    queryKey: ['staff'],
-    queryFn: async () => {
-      const response = await api.get('/api/v1/staff');
-      return response.data;
-    },
-  });
+  // System level
+  if (['sys_admin', 'sys_super'].includes(role)) {
+    return <SysAdminDashboard />;
+  }
 
-  const { data: classes, isLoading: loadingClasses } = useQuery({
-    queryKey: ['classes'],
-    queryFn: async () => {
-      const response = await api.get('/api/v1/classes');
-      return response.data;
-    },
-  });
+  if (['sys_read_only', 'sys_guest'].includes(role)) {
+    return <GuestDashboard />;
+  }
 
-  const stats = [
-    {
-      title: 'Total Students',
-      value: students?.length ?? 0,
-      icon: GraduationCap,
-      color: 'text-blue-600',
-      bg: 'bg-blue-50',
-      loading: loadingStudents,
-    },
-    {
-      title: 'Total Staff',
-      value: staff?.length ?? 0,
-      icon: Users,
-      color: 'text-green-600',
-      bg: 'bg-green-50',
-      loading: loadingStaff,
-    },
-    {
-      title: 'Total Classes',
-      value: classes?.length ?? 0,
-      icon: School,
-      color: 'text-purple-600',
-      bg: 'bg-purple-50',
-      loading: loadingClasses,
-    },
-    {
-      title: 'Fee Collection',
-      value: 'PKR 0',
-      icon: DollarSign,
-      color: 'text-orange-600',
-      bg: 'bg-orange-50',
-      loading: false,
-    },
-  ];
+  // Organization level
+  if (['org_ceo', 'org_admin', 'org_super', 'org_it'].includes(role)) {
+    return <OrgDashboard />;
+  }
 
-  return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-gray-500">Welcome to rsEdu School Management System</p>
-      </div>
+  if (['org_accounts', 'org_hr'].includes(role)) {
+    return <AccountsDashboard />;
+  }
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat) => {
-          const Icon = stat.icon;
-          return (
-            <Card key={stat.title}>
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-gray-500">
-                  {stat.title}
-                </CardTitle>
-                <div className={`p-2 rounded-lg ${stat.bg}`}>
-                  <Icon className={`w-5 h-5 ${stat.color}`} />
-                </div>
-              </CardHeader>
-              <CardContent>
-                {stat.loading ? (
-                  <Skeleton className="h-8 w-16" />
-                ) : (
-                  <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
-                )}
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
-    </div>
-  );
+  if (['org_staff', 'org_read_only'].includes(role)) {
+    return <OrgDashboard />;
+  }
+
+  if (role === 'org_guest') {
+    return <GuestDashboard />;
+  }
+
+  // School level
+  if (['s_principal', 's_vice_principal', 's_admin', 's_super'].includes(role)) {
+    return <SchoolDashboard />;
+  }
+
+  if (['s_accounts', 's_hr'].includes(role)) {
+    return <AccountsDashboard />;
+  }
+
+  if (['s_staff', 's_it', 's_read_only'].includes(role)) {
+    return <SchoolDashboard />;
+  }
+
+  if (role === 's_teacher') {
+    return <TeacherDashboard />;
+  }
+
+  if (role === 's_student') {
+    return <SchoolDashboard />;
+  }
+
+  if (role === 's_guardian') {
+    return <GuardianDashboard />;
+  }
+
+  if (['s_guest', 's_librarian', 's_transport'].includes(role)) {
+    return <GuestDashboard />;
+  }
+
+  // Default fallback
+  return <SchoolDashboard />;
 }
