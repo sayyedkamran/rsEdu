@@ -13,11 +13,12 @@ use crate::{
     },
 };
 
-// Helper to fetch role name from user_id
+// Helper to fetch role name and title from user_id
 async fn get_user_role(
     db: &sea_orm::DatabaseConnection,
     user_id: i32,
-) -> Result<(String, i32), (StatusCode, String)> {
+) -> Result<(String, String, i32), (StatusCode, String)> {
+    // Find user_role record
     let user_role = user_roles::Entity::find()
         .filter(user_roles::Column::UserId.eq(user_id))
         .one(db)
@@ -25,13 +26,17 @@ async fn get_user_role(
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
         .ok_or((StatusCode::INTERNAL_SERVER_ERROR, "No role assigned to user".to_string()))?;
 
+    // Find role
     let role = roles::Entity::find_by_id(user_role.role_id)
         .one(db)
         .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
         .ok_or((StatusCode::INTERNAL_SERVER_ERROR, "Role not found".to_string()))?;
 
-    Ok((role.name, user_role.role_id))
+    // Use title if available, fallback to name
+    let role_title = role.title.unwrap_or_else(|| role.name.clone());
+
+    Ok((role.name, role_title, user_role.role_id))
 }
 
 // POST /api/v1/auth/register
@@ -73,12 +78,13 @@ pub async fn register(
         .await
         .map_err(|e| (StatusCode::BAD_REQUEST, e.to_string()))?;
 
-    let (role_name, _) = get_user_role(&*state.db, user.id).await?;
+    let (role_name, role_title, _) = get_user_role(&*state.db, user.id).await?;
 
     let token = generate_token(
         user.id,
         &user.email,
         &role_name,
+        &role_title,
         Some(payload.organization_id),
         payload.branch_id,
         &state.jwt_secret,
@@ -89,6 +95,7 @@ pub async fn register(
         token,
         username: user.username,
         role: role_name,
+        role_title,
         organization_id: user.organization_id,
         branch_id: user.branch_id,
     }))
@@ -117,12 +124,13 @@ pub async fn login(
         return Err((StatusCode::UNAUTHORIZED, "Account is disabled".to_string()));
     }
 
-    let (role_name, _) = get_user_role(&*state.db, user.id).await?;
+    let (role_name, role_title, _) = get_user_role(&*state.db, user.id).await?;
 
     let token = generate_token(
         user.id,
         &user.email,
         &role_name,
+        &role_title,
         user.organization_id,
         user.branch_id,
         &state.jwt_secret,
@@ -133,6 +141,7 @@ pub async fn login(
         token,
         username: user.username,
         role: role_name,
+        role_title,
         organization_id: user.organization_id,
         branch_id: user.branch_id,
     }))

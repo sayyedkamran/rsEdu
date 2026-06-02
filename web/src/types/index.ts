@@ -8,6 +8,7 @@ export interface AuthResponse {
   token: string;
   username: string;
   role: string;
+  role_title: string;
   organization_id: number | null;
   branch_id: number | null;
 }

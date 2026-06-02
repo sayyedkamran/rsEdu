@@ -21,6 +21,7 @@ pub struct AuthResponse {
     pub token: String,
     pub username: String,
     pub role: String,
+    pub role_title: String,
     pub organization_id: Option<i32>,
     pub branch_id: Option<i32>,
 }

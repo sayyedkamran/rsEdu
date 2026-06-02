@@ -7,6 +7,7 @@ interface AuthState {
   user: {
     username: string;
     role: string;
+    role_title: string;
     organization_id: number | null;
     branch_id: number | null;
   } | null;
@@ -29,6 +30,7 @@ export const useAuthStore = create<AuthState>()(
           user: {
             username: data.username,
             role: data.role,
+            role_title: data.role_title,
             organization_id: data.organization_id,
             branch_id: data.branch_id,
           },

@@ -88,12 +88,17 @@ export function Navbar() {
             </Avatar>
             <div className="text-left hidden md:block">
               <p className="text-sm font-medium text-gray-900">{user?.username}</p>
-              <p className="text-xs text-gray-500">{user?.role}</p>
-            </div>
+              <p className="text-xs text-gray-500">{user?.role_title}</p>
+          </div>
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48">
-          <DropdownMenuLabel>My Account</DropdownMenuLabel>
+          <DropdownMenuLabel>
+            <div>
+              <p className="font-medium">{user?.username}</p>
+              <p className="text-xs text-gray-500 font-normal">{user?.role_title}</p>
+            </div>
+</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
             <Link href="/profile" className="flex items-center gap-2 cursor-pointer">
