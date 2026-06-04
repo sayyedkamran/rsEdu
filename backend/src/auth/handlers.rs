@@ -183,6 +183,7 @@ pub async fn google_login(
             password_hash: ActiveValue::Set(String::new()),
             google_id: ActiveValue::Set(Some(payload.google_id.clone())),
             profile_picture_path: ActiveValue::Set(payload.picture.clone()),
+            user_type: ActiveValue::Set(Some("guest".to_string())),
             is_active: ActiveValue::Set(true),
             created_at: ActiveValue::Set(Utc::now().into()),
             updated_at: ActiveValue::Set(Utc::now().into()),
