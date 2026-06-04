@@ -103,7 +103,8 @@ async fn main() {
     let public_routes = Router::new()
         .route("/health", get(health_check))
         .route("/api/v1/auth/register", post(auth::handlers::register))
-        .route("/api/v1/auth/login", post(auth::handlers::login));
+        .route("/api/v1/auth/login", post(auth::handlers::login))
+        .route("/api/v1/auth/google", post(auth::handlers::google_login));
 
     let protected_routes = Router::new()
         // Student routes

@@ -25,3 +25,12 @@ pub struct AuthResponse {
     pub organization_id: Option<i32>,
     pub branch_id: Option<i32>,
 }
+
+#[derive(Debug, Deserialize)]
+pub struct GoogleLoginRequest {
+    pub google_id: String,
+    pub email: String,
+    pub name: Option<String>,
+    pub picture: Option<String>,
+    pub access_token: Option<String>,
+}

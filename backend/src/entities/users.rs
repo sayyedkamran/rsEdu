@@ -18,6 +18,8 @@ pub struct Model {
     pub created_at: DateTimeWithTimeZone,
     pub updated_at: DateTimeWithTimeZone,
     pub profile_picture_path: Option<String>,
+    pub google_id: Option<String>,
+    pub user_type: Option<String>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

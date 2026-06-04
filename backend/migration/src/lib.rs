@@ -67,6 +67,7 @@ mod m20260523_174614_add_profile_picture_to_users;
 mod m20260523_175507_rename_logo_url_to_logo_path_in_organizations;
 mod m20260526_172756_add_title_and_level_to_roles;
 mod m20260526_172952_create_user_permissions_table;
+mod m20260604_163201_add_google_id_and_user_type_to_users;
 
 pub struct Migrator;
 
@@ -141,6 +142,7 @@ impl MigratorTrait for Migrator {
             Box::new(m20260523_175507_rename_logo_url_to_logo_path_in_organizations::Migration),
             Box::new(m20260526_172756_add_title_and_level_to_roles::Migration),
             Box::new(m20260526_172952_create_user_permissions_table::Migration),
+            Box::new(m20260604_163201_add_google_id_and_user_type_to_users::Migration),
         ]
     }
 }

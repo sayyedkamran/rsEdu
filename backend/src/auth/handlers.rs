@@ -8,7 +8,7 @@ use crate::{
     entities::user_roles,
     entities::roles,
     auth::{
-        dto::{AuthResponse, LoginRequest, RegisterRequest},
+        dto::{AuthResponse, LoginRequest, RegisterRequest, GoogleLoginRequest},
         utils::{generate_token, hash_password, verify_password},
     },
 };
@@ -125,6 +125,81 @@ pub async fn login(
     }
 
     let (role_name, role_title, _) = get_user_role(&*state.db, user.id).await?;
+
+    let token = generate_token(
+        user.id,
+        &user.email,
+        &role_name,
+        &role_title,
+        user.organization_id,
+        user.branch_id,
+        &state.jwt_secret,
+    )
+    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
+
+    Ok(Json(AuthResponse {
+        token,
+        username: user.username,
+        role: role_name,
+        role_title,
+        organization_id: user.organization_id,
+        branch_id: user.branch_id,
+    }))
+}
+
+// POST /api/v1/auth/google
+pub async fn google_login(
+    State(state): State<AppState>,
+    Json(payload): Json<GoogleLoginRequest>,
+) -> Result<Json<AuthResponse>, (StatusCode, String)> {
+    // Check if user exists by google_id or email
+    let existing_user = users::Entity::find()
+        .filter(
+            sea_orm::Condition::any()
+                .add(users::Column::GoogleId.eq(&payload.google_id))
+                .add(users::Column::Email.eq(&payload.email)),
+        )
+        .one(&*state.db)
+        .await
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+
+    let user = if let Some(mut found_user) = existing_user {
+        // Update google_id if not set
+        if found_user.google_id.is_none() {
+            let mut active: ActiveModel = found_user.into();
+            active.google_id = ActiveValue::Set(Some(payload.google_id.clone()));
+            active.updated_at = ActiveValue::Set(Utc::now().into());
+            active.update(&*state.db)
+                .await
+                .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
+        } else {
+            found_user
+        }
+    } else {
+        // Create new user with Google info
+        let new_user = ActiveModel {
+            username: ActiveValue::Set(payload.name.clone().unwrap_or_else(|| payload.email.clone())),
+            email: ActiveValue::Set(payload.email.clone()),
+            password_hash: ActiveValue::Set(String::new()),
+            google_id: ActiveValue::Set(Some(payload.google_id.clone())),
+            profile_picture_path: ActiveValue::Set(payload.picture.clone()),
+            is_active: ActiveValue::Set(true),
+            created_at: ActiveValue::Set(Utc::now().into()),
+            updated_at: ActiveValue::Set(Utc::now().into()),
+            ..Default::default()
+        };
+
+        new_user
+            .insert(&*state.db)
+            .await
+            .map_err(|e| (StatusCode::BAD_REQUEST, e.to_string()))?
+    };
+
+    // Get role - default to s_guest if no role assigned
+    let (role_name, role_title) = match get_user_role(&*state.db, user.id).await {
+        Ok((name, title, _)) => (name, title),
+        Err(_) => ("s_guest".to_string(), "School Guest".to_string()),
+    };
 
     let token = generate_token(
         user.id,
